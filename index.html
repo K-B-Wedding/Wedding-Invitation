@@ -438,6 +438,12 @@ body.modal-open * {
   animation-play-state: paused !important;
   transition: none !important;
 }
+/* Let the modal and its children keep animating while everything else pauses */
+body.modal-open .rsvp-overlay,
+body.modal-open .rsvp-overlay * {
+  animation-play-state: running !important;
+  transition: initial !important;
+}
 
 
 
@@ -800,4 +806,5 @@ button.addEventListener("click", () => {
 
 </body>
 </html>
+
 
