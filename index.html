@@ -601,9 +601,13 @@ body.modal-open .rsvp-overlay * {
     const track = document.querySelector(".carousel-track");
 
     const SPEED_PX_PER_SEC = 105;
+
+    // Persist across pauses/resumes
     let firstSetWidth = 0;
     let raf = 0;
     let running = false;
+    let x = 0;        // <— persistent offset
+    let last = 0;     // <— persistent timestamp for smooth dt
 
     function measureGapPx() {
       const cs = getComputedStyle(track);
@@ -611,32 +615,38 @@ body.modal-open .rsvp-overlay * {
       return parseFloat(g) || 0;
     }
 
+    function step(now) {
+      if (!running) return;
+      const dt = (now - last) / 1000;
+      last = now;
+
+      // advance and wrap
+      x += SPEED_PX_PER_SEC * dt;
+      if (firstSetWidth > 0) x %= firstSetWidth;
+
+      track.style.transform = `translate3d(${-x}px,0,0)`;
+      raf = requestAnimationFrame(step);
+    }
+
     function start() {
       if (running) return;
       running = true;
-      let x = 0;
-      let last = performance.now();
-
-      function step(now) {
-        if (!running) return;
-        const dt = (now - last) / 1000;
-        last = now;
-        x += SPEED_PX_PER_SEC * dt;
-        if (x >= firstSetWidth) x -= firstSetWidth;
-        track.style.transform = `translate3d(${-x}px,0,0)`;
-        raf = requestAnimationFrame(step);
-      }
+      last = performance.now(); // keep current x; just resume timing
       raf = requestAnimationFrame(step);
     }
 
     function pause() {
       running = false;
       cancelAnimationFrame(raf);
+      // keep current transform — do NOT reset x
     }
 
     function build() {
-      pause();
+      // Preserve relative position across rebuilds (e.g., on resize)
+      const prevWidth = firstSetWidth;
       const originals = Array.from(track.children).filter(n => n.getAttribute("data-clone") !== "1");
+
+      // Only rebuild when we must (on first init or after resize)
       track.innerHTML = "";
       originals.forEach(n => track.appendChild(n));
 
@@ -656,18 +666,29 @@ body.modal-open .rsvp-overlay * {
         });
         total = track.scrollWidth;
       }
-      start();
+
+      // Adjust x so visual offset is preserved after width change
+      if (prevWidth > 0 && firstSetWidth > 0) {
+        const ratio = x / prevWidth;
+        x = (ratio * firstSetWidth) % firstSetWidth;
+      } else {
+        x = x % (firstSetWidth || 1);
+      }
+
+      // Apply transform immediately so there’s no “snap back” flash
+      track.style.transform = `translate3d(${-x}px,0,0)`;
     }
 
     function initAfterImages() {
       const imgs = track.querySelectorAll("img");
       let pending = imgs.length;
-      if (pending === 0) { build(); return; }
+      if (pending === 0) { build(); start(); return; }
+
       imgs.forEach(img => {
         if (img.complete) {
-          if (--pending === 0) build();
+          if (--pending === 0) { build(); start(); }
         } else {
-          const done = () => { if (--pending === 0) build(); };
+          const done = () => { if (--pending === 0) { build(); start(); } };
           img.addEventListener("load", done, { once: true });
           img.addEventListener("error", done, { once: true });
         }
@@ -675,12 +696,20 @@ body.modal-open .rsvp-overlay * {
     }
 
     window.addEventListener("load", initAfterImages);
-    window.addEventListener("resize", build);
 
-    // Expose controls so the modal can pause/resume
+    // Rebuild only on resize; pause during rebuild, then resume from same spot
+    let resizeId;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeId);
+      pause();
+      resizeId = setTimeout(() => { build(); start(); }, 120);
+    });
+
+    // Expose controls used by your modal open/close
     window.carouselControl = { pause, start };
   })();
 </script>
+
 
 
 
@@ -810,6 +839,7 @@ button.addEventListener("click", () => {
 
 </body>
 </html>
+
 
 
 
