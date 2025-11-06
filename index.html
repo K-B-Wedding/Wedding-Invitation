@@ -1,565 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Keirra & Brandon's Wedding</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-
-        body {
-          font-family: 'Raleway', sans-serif;
-          margin: 0;
-          padding: 0;
-          color: white;
-          text-align: center;
-          position: relative;
-          min-height: 100vh;
-        }
-
-        body::before {
-          content: "";
-          position: fixed;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
-          z-index: -1;
-          background-image: url('cavesBeachBackground.png');
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-        }
-
-        header {
-          padding: 170px 20px 0px 20px;
-          background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        section {
-          padding: 40px 20px;
-          background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        h1 {
-          font-family: 'Great Vibes', cursive;
-          font-size: 3rem;
-          color: white;
-          text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-          word-spacing: 0.1em;
-        }
-
-        h2, p, li, button {
-          font-family: 'Raleway', sans-serif;
-          color: white;
-          text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-
-        }
-
- .countdown {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 20px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  flex-wrap: nowrap;
-  padding: 0 5px;
-}
-
-.countdown-box {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 6px;
-  border-radius: 8px;
-  flex: 1 1 22%;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  animation: pulse 3s infinite ease-in-out;
-}
-
-
-.countdown-box .digit {
-  font-size: clamp(1rem, 4vw, 1.6rem);
-  font-weight: bold;
-  display: block;
-  line-height: 1;
-}
-
-.countdown-box .label {
-  font-size: clamp(0.6rem, 2vw, 0.8rem);
-  margin-top: 2px;
-}
-
-
-        .rsvp-button {
-  margin: 20px 0;
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.1); /* soft transparent background */
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.6); /* faint white border */
-  border-radius: 8px;
-  cursor: pointer;
-  backdrop-filter: blur(4px); /* glassy effect */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-  transition: all 0.3s ease;
-}
-
-.rsvp-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: white;
-  transform: scale(1.03);
-}
-
-        .photo-collage {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 10px;
-        }
-
-        .photo-collage img {
-          width: 150px;
-          height: 150px;
-          object-fit: cover;
-          border-radius: 10px;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-        }
-
-        .entourage ul {
-          list-style-type: none;
-          padding: 0;
-        }
-
-        .entourage li {
-          margin: 10px 0;
-        }
-
-        .faq, .attire, .reminders {
-          text-align: center;
-          max-width: 600px;
-          margin: auto;
-        }
-
-        .reminders ul {
-          list-style-position: inside;     /* ✅ Keeps bullets close to the text */
-          display: inline-block;           /* ✅ Shrinks to content width */
-          text-align: left;                /* ✅ So bullets & text line up neatly */
-          padding: 0;
-          margin: 0 auto;                  /* ✅ Center the entire list block */
-        }
-
-       
-
-
-
-        .venue iframe {
-          width: 90%;
-          height: 300px;
-          border: none;
-        }
-
-        /* Media query for phones in portrait */
-@media screen and (max-width: 400px) {
-  .countdown-box {
-    flex: 1 1 40%;
-    padding: 8px;
-    margin: 0 auto;
-  }
-
-  .countdown-box .digit {
-    font-size: 1.5rem;
-  }
-
-  .countdown-box .label {
-    font-size: 0.8rem;
-  }
-}
-
-          .photo-collage img {
-            width: 100px;
-            height: 100px;
-          }
-        }
-
-        @media screen and (min-width: 768px) {
-  .countdown-box {
-    padding: 10px 6px;
-    border-radius: 6px;
-    flex: 1 1 20%;
-    max-width: 160px;
-  }
-
-  .countdown-box .digit {
-    font-size: 1.8rem;
-  }
-
-  .countdown-box .label {
-    font-size: 0.85rem;
-  }
-}
-
-/* Carousel container: hide overflow and stop snapping */
-.carousel-container {
-  width: 600px;
-  margin: 0 auto;
-  overflow: hidden;   /* ⬅️ no scroll, no gap flashes */
-  display: block;
-}
-
-/* Track: flex row that we translate with the GPU */
-.carousel-track {
-  display: flex;
-  gap: 20px;          /* keep your spacing */
-  padding: 20px 0;
-  will-change: transform;
-  transform: translate3d(0,0,0);
-}
-
-/* Images */
-.carousel-track img {
-  width: 180px;
-  height: 120px;
-  object-fit: cover;            /* fills the box neatly */
-  border-radius: 14px;          /* consistent rounding */
-  flex-shrink: 0;
-  display: block;
-  overflow: hidden;             /* keeps corners clean */
-  background-color: rgba(255,255,255,0.05);
-  /* hard-clip the image to the rounded corner shape */
-  clip-path: inset(0 round 14px);
-  -webkit-clip-path: inset(0 round 14px);
-}
-
-
-/* Mobile tweaks */
-@media screen and (max-width: 600px) {
-  .carousel-container {
-    width: 100%;
-    padding: 10px 10px;
-  }
-  .carousel-track img {
-    width: 100px;
-    height: 150px;
-  }
-}
-
-
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.our-song {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 30px 20px;
-  text-align: center;
-}
-
-.our-song h2 {
-  font-family: 'Great Vibes', cursive;
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-#playPauseBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1rem;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  transition: all 0.3s ease;
-}
-
-#playPauseBtn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: white;
-}
-
-.letter {
-  opacity: 0;
-  display: inline-block;
-  transform: translateY(20px);
-  animation: fadeUp 0.6s forwards;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.6);
-}
-
-
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-        /* ✨ RSVP Modal Aesthetic Update */
-.rsvp-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: fadeInOverlay 0.3s ease forwards;
-}
-
-.rsvp-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 18px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-  padding: 28px 36px;
-  width: min(90%, 400px);
-  color: #fff;
-  text-align: center;
-  animation: fadeUpCard 0.4s ease forwards;
-}
-
-.rsvp-title {
-  font-family: 'Great Vibes', cursive;
-  font-size: 2rem;
-  margin: 0 0 10px;
-  color: white;
-}
-
-.rsvp-subtitle {
-  font-size: 0.95rem;
-  opacity: 0.85;
-  margin-bottom: 18px;
-  line-height: 1.4;
-}
-
-.rsvp-input {
-  width: 100%;
-  padding: 12px 14px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  text-align: center;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.rsvp-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.rsvp-input:focus {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: white;
-}
-
-.rsvp-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 18px;
-  gap: 10px;
-}
-
-.rsvp-confirm, .rsvp-cancel {
-  flex: 1;
-  padding: 10px 0;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
-}
-
-.rsvp-confirm {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.rsvp-confirm:hover {
-  background: rgba(255, 255, 255, 0.35);
-  transform: scale(1.03);
-}
-
-.rsvp-cancel {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.rsvp-cancel:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.rsvp-message {
-  margin-top: 15px;
-  min-height: 20px;
-  font-size: 0.9rem;
-  text-shadow: 0 0 5px rgba(0,0,0,0.5);
-  color: #ffdddd;
-}
-
-/* Subtle Animations */
-@keyframes fadeInOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeUpCard {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-
-
-
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Keirra & Brandon's Wedding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      text-align: center;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Cheaper background: absolute instead of fixed */
+    body::before {
+      content: "";
+      position: absolute; /* cheaper than fixed */
+      inset: 0;
+      z-index: -1;
+      background-image: url('cavesBeachBackground.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(0.95);
+    }
+
+    header {
+      padding: 170px 20px 0px 20px;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    section {
+      padding: 40px 20px;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+      word-spacing: 0.1em;
+    }
+
+    h2, p, li, button {
+      font-family: 'Raleway', sans-serif;
+      color: white;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 20px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      flex-wrap: nowrap;
+      padding: 0 5px;
+    }
+
+    .countdown-box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px;
+      border-radius: 8px;
+      flex: 1 1 22%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    .countdown-box .digit {
+      font-size: clamp(1rem, 4vw, 1.6rem);
+      font-weight: bold;
+      display: block;
+      line-height: 1;
+      text-shadow: none; /* cheaper paints for updating text */
+    }
+
+    .countdown-box .label {
+      font-size: clamp(0.6rem, 2vw, 0.8rem);
+      margin-top: 2px;
+    }
+
+    .rsvp-button {
+      margin: 20px 0;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      transition: all 0.3s ease;
+    }
+
+    .rsvp-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: white;
+      transform: scale(1.03);
+    }
+
+    .photo-collage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .photo-collage img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    }
+
+    .entourage ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .entourage li {
+      margin: 10px 0;
+    }
+
+    .faq, .attire, .reminders {
+      text-align: center;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .reminders ul {
+      list-style-position: inside;
+      display: inline-block;
+      text-align: left;
+      padding: 0;
+      margin: 0 auto;
+    }
+
+    /* Venue map container (iframe injected lazily) */
+    .venue iframe {
+      width: 90%;
+      height: 300px;
+      border: none;
+    }
+
+    /* Media query for phones in portrait */
+    @media screen and (max-width: 400px) {
+      .countdown-box {
+        flex: 1 1 40%;
+        padding: 8px;
+        margin: 0 auto;
+      }
+      .countdown-box .digit { font-size: 1.5rem; }
+      .countdown-box .label { font-size: 0.8rem; }
+      .photo-collage img { width: 100px; height: 100px; }
+    }
+
+    @media screen and (min-width: 768px) {
+      .countdown-box {
+        padding: 10px 6px;
+        border-radius: 6px;
+        flex: 1 1 20%;
+        max-width: 160px;
+      }
+      .countdown-box .digit { font-size: 1.8rem; }
+      .countdown-box .label { font-size: 0.85rem; }
+    }
+
+    /* Carousel container: hide overflow and stop snapping */
+    .carousel-container {
+      width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      display: block;
+    }
+
+    /* Track: flex row that we translate with the GPU */
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+    }
+
+    /* Images: drop clip-path, rely on border-radius + overflow */
+    .carousel-track img {
+      width: 180px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 14px;
+      flex-shrink: 0;
+      display: block;
+      overflow: hidden;
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    /* Mobile tweaks */
+    @media screen and (max-width: 600px) {
+      .carousel-container { width: 100%; padding: 10px 10px; }
+      .carousel-track img { width: 100px; height: 150px; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .our-song {
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .our-song h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    #playPauseBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    #playPauseBtn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: white;
+    }
+
+    .letter {
+      opacity: 0;
+      display: inline-block;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s forwards;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.6);
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pause everything when modal is open */
+    body.modal-open * {
+      animation-play-state: paused !important;
+      transition: none !important;
+    }
+
+    /* Reduce motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .countdown-box { animation: none !important; }
+    }
+
+    /* RSVP Modal */
+    .rsvp-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55); /* no backdrop-filter here */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeInOverlay 0.2s ease forwards;
+    }
+
+    .rsvp-card {
+      background: rgba(32, 32, 32, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      padding: 28px 36px;
+      width: min(90%, 400px);
+      color: #fff;
+      text-align: center;
+      animation: fadeUpCard 0.4s ease forwards;
+    }
+
+    .rsvp-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
+      margin: 0 0 10px;
+      color: white;
+    }
+
+    .rsvp-subtitle {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .rsvp-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .rsvp-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+
+    .rsvp-input:focus {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: white;
+    }
+
+    .rsvp-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+    }
+
+    .rsvp-confirm, .rsvp-cancel {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+    }
+
+    .rsvp-confirm { background: rgba(255, 255, 255, 0.2); }
+    .rsvp-confirm:hover { background: rgba(255, 255, 255, 0.35); transform: scale(1.03); }
+
+    .rsvp-cancel { background: rgba(255, 255, 255, 0.08); }
+    .rsvp-cancel:hover { background: rgba(255, 255, 255, 0.18); }
+
+    .rsvp-message {
+      margin-top: 15px;
+      min-height: 20px;
+      font-size: 0.9rem;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+      color: #ffdddd;
+    }
+
+    @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeUpCard { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
 <body>
-<header>
+  <header>
     <h1 id="weddingTitle"></h1>
 
     <div class="countdown">
-        <div class="countdown-box"><span class="digit" id="days">00</span><span class="label">DAYS</span></div>
-        <div class="countdown-box"><span class="digit" id="hours">00</span><span class="label">HOURS</span></div>
-        <div class="countdown-box"><span class="digit" id="minutes">00</span><span class="label">MINUTES</span></div>
-        <div class="countdown-box"><span class="digit" id="seconds">00</span><span class="label">SECONDS</span></div>
+      <div class="countdown-box"><span class="digit" id="days">00</span><span class="label">DAYS</span></div>
+      <div class="countdown-box"><span class="digit" id="hours">00</span><span class="label">HOURS</span></div>
+      <div class="countdown-box"><span class="digit" id="minutes">00</span><span class="label">MINUTES</span></div>
+      <div class="countdown-box"><span class="digit" id="seconds">00</span><span class="label">SECONDS</span></div>
     </div>
-</header>
+  </header>
 
-<section>
+  <section>
     <h2>You're Invited!</h2>
     <p>Join us for our special day by the sea.</p>
     <button class="rsvp-button" onclick="openRsvpModal()">💌 RSVP Now</button>
-</section>
+  </section>
 
-<section class="our-song">
-  <h2>Our Song</h2>
-  <button id="playPauseBtn" aria-label="Play">
-  <span id="iconContainer">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 5v14l11-7z"/>
-    </svg>
-  </span>
-  <span style="margin-left: 8px;">Play</span>
-</button>
+  <section class="our-song">
+    <h2>Our Song</h2>
+    <button id="playPauseBtn" aria-label="Play">
+      <span id="iconContainer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+      <span style="margin-left: 8px;">Play</span>
+    </button>
+    <audio id="weddingSong" src="ourSong.mp3"></audio>
+  </section>
 
-  <audio id="weddingSong" src="ourSong.mp3"></audio>
-</section>
-
-
-<section class="photo-showcase">
+  <section class="photo-showcase">
     <h2>Our Journey</h2>
     <div class="carousel-container">
-        <div class="carousel-track">
-            <img src="photo2.jpg" alt="2" />
-            <img src="photo3.jpg" alt="3" />
-            <img src="photo4.jpg" alt="4" />
-            <img src="quokka.jpg" alt="5" />
-            <img src="quokka2.jpg" alt="6" />
-            <img src="panda1.jpg" alt="7" />
-        </div>
+      <div class="carousel-track">
+        <img src="photo2.jpg" alt="2" loading="lazy" decoding="async" />
+        <img src="photo3.jpg" alt="3" loading="lazy" decoding="async" />
+        <img src="photo4.jpg" alt="4" loading="lazy" decoding="async" />
+        <img src="quokka.jpg" alt="5" loading="lazy" decoding="async" />
+        <img src="quokka2.jpg" alt="6" loading="lazy" decoding="async" />
+        <img src="panda1.jpg" alt="7" loading="lazy" decoding="async" />
+      </div>
     </div>
-</section>
+  </section>
 
-
-
-<section class="entourage fade-in">
+  <section class="entourage fade-in">
     <h2>The Entourage</h2>
     <ul>
-        <li>Best Man: Best Man Guy</li>
-        <li>Maid of Honor: Maid of Honor Girl</li>
-        <li>Bridesmaids: Random Girl 1, Random Girl 2</li>
-        <li>Groomsmen: Random Guy 1, Random Guy 2</li>
+      <li>Best Man: Best Man Guy</li>
+      <li>Maid of Honor: Maid of Honor Girl</li>
+      <li>Bridesmaids: Random Girl 1, Random Girl 2</li>
+      <li>Groomsmen: Random Guy 1, Random Guy 2</li>
     </ul>
-</section>
+  </section>
 
-<section class="faq fade-in">
+  <section class="faq fade-in">
     <h2>FAQ</h2>
     <p><strong>What time should I arrive?</strong><br> Please arrive by 3:45 PM.</p>
     <p><strong>Is the venue accessible?</strong><br> Yes, it is wheelchair-friendly.</p>
     <p><strong>Can I bring a guest?</strong><br> Only guests listed on the invite.</p>
-</section>
+  </section>
 
-<section class="attire fade-in">
+  <section class="attire fade-in">
     <h2>Attire</h2>
     <p>Beach formal: Linen, sundresses, and comfy sandals. Avoid heels etc.</p>
-</section>
+  </section>
 
-<section class="reminders fade-in">
+  <section class="reminders fade-in">
     <h2>Reminders</h2>
     <ul>
-        <li>No boxed gifts, please – envelopes only.</li>
-        <li>Adults-only event – thank you for understanding.</li>
-        <li>Arrive early to enjoy the view.</li>
+      <li>No boxed gifts, please – envelopes only.</li>
+      <li>Adults-only event – thank you for understanding.</li>
+      <li>Arrive early to enjoy the view.</li>
     </ul>
-</section>
+  </section>
 
-<section class="venue fade-in">
+  <section class="venue fade-in">
     <h2>Venue</h2>
     <p>Caves Coastal, Newcastle, Caves Beach</p>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></section>
 
-   <footer style="padding: 20px; text-align: center; background-color: rgba(0,0,0,0.3); color: white;">
-  <p>#KeirraAndBrandon2026 • 📍 
-    <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
-      Caves Beach Venue
-    </a>
-  </p>
-</footer>
+    <!-- Lazy map placeholder; iframe injected when visible -->
+    <div id="venueMap" style="width:90%;height:300px;border:0;background:rgba(255,255,255,0.06);margin:0 auto;border-radius:12px;overflow:hidden;"></div>
+  </section>
 
-<!-- RSVP Modal (Updated Style) -->
-<div id="rsvpModal" class="rsvp-overlay">
-  <div class="rsvp-card">
-    <h2 class="rsvp-title">Find  Your  RSVP</h2>
-    <p class="rsvp-subtitle">Enter the code printed under your QR<br></p>
+  <footer style="padding: 20px; text-align: center; background-color: rgba(0,0,0,0.3); color: white;">
+    <p>#KeirraAndBrandon2026 • 📍
+      <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z"
+         target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
+        Caves Beach Venue
+      </a>
+    </p>
+  </footer>
 
-    <input id="rsvpCodeInput" placeholder="Enter your code" class="rsvp-input" />
+  <!-- RSVP Modal -->
+  <div id="rsvpModal" class="rsvp-overlay" aria-hidden="true">
+    <div class="rsvp-card" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+      <h2 id="rsvpTitle" class="rsvp-title">Find&nbsp; Your&nbsp; RSVP</h2>
+      <p class="rsvp-subtitle">Enter the code printed under your QR<br></p>
 
-    <div class="rsvp-buttons">
-      <button onclick="submitRsvpCode()" class="rsvp-confirm">Continue</button>
-      <button onclick="closeRsvpModal()" class="rsvp-cancel">Cancel</button>
+      <input id="rsvpCodeInput" placeholder="Enter your code" class="rsvp-input" autocomplete="one-time-code" />
+
+      <div class="rsvp-buttons">
+        <button onclick="submitRsvpCode()" class="rsvp-confirm">Continue</button>
+        <button onclick="closeRsvpModal()" class="rsvp-cancel">Cancel</button>
+      </div>
+
+      <div id="rsvpMsg" class="rsvp-message"></div>
     </div>
-
-    <div id="rsvpMsg" class="rsvp-message"></div>
   </div>
-</div>
 
-
-<script>
+  <!-- Countdown -->
+  <script>
     const weddingDate = new Date("2026-02-07T16:00:00").getTime();
+    let countdownTimer = null;
 
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = weddingDate - now;
 
       if (distance < 0) {
-        document.querySelector('.countdown').innerHTML = "We're Married! 💍";
+        const c = document.querySelector('.countdown');
+        if (c) c.innerHTML = "We're Married! 💍";
         return;
       }
 
@@ -574,232 +522,246 @@
       document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
     };
 
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-
-
-</script>
-
-<script>
-  (function () {
-    const container = document.querySelector(".carousel-container");
-    const track = document.querySelector(".carousel-track");
-
-    const SPEED_PX_PER_SEC = 105;   // tweak to taste
-    let firstSetWidth = 0;
-    let raf = 0;
-
-    function measureGapPx() {
-      const cs = getComputedStyle(track);
-      const g = cs.gap || cs.columnGap || "0px";
-      return parseFloat(g) || 0;
+    function startCountdown() {
+      updateCountdown();
+      countdownTimer = setInterval(updateCountdown, 1000);
     }
+    function pauseCountdown() {
+      if (countdownTimer) clearInterval(countdownTimer);
+    }
+    startCountdown();
+  </script>
 
-    function build() {
-      cancelAnimationFrame(raf);
+  <!-- Carousel with exposed controls -->
+  <script>
+    (function () {
+      const container = document.querySelector(".carousel-container");
+      const track = document.querySelector(".carousel-track");
 
-      // 1) Keep originals; remove old clones
-      const originals = Array.from(track.children).filter(n => n.getAttribute("data-clone") !== "1");
-      track.innerHTML = "";
-      originals.forEach(n => track.appendChild(n));
+      const SPEED_PX_PER_SEC = 105;
+      let firstSetWidth = 0;
+      let raf = 0;
+      let running = false;
 
-      // 2) Measure first set width (images need sizes by now)
-      firstSetWidth = track.scrollWidth;
-
-      // 3) Ensure there is at least containerWidth worth of content AFTER the first set.
-      //    This guarantees no empty area is ever visible as we approach the wrap point.
-      const containerWidth = container.clientWidth;
-      const oneItemWidth = originals[0]?.getBoundingClientRect().width || 0;
-      const gapPx = measureGapPx();
-
-      // Buffer: one item + one gap to cover half-visible cases and rounding
-      const buffer = oneItemWidth + gapPx + 2;
-
-      // Keep cloning the originals until (totalWidth - firstSetWidth) >= (containerWidth + buffer)
-      let total = track.scrollWidth;
-      while ((total - firstSetWidth) < (containerWidth + buffer)) {
-        originals.forEach(n => {
-          const c = n.cloneNode(true);
-          c.setAttribute("data-clone", "1");
-          track.appendChild(c);
-        });
-        total = track.scrollWidth;
+      function measureGapPx() {
+        const cs = getComputedStyle(track);
+        const g = cs.gap || cs.columnGap || "0px";
+        return parseFloat(g) || 0;
       }
 
-      start();
-    }
+      function start() {
+        if (running) return;
+        running = true;
+        let x = 0;
+        let last = performance.now();
 
-    function start() {
-      let x = 0;
-      let last = performance.now();
-
-      function step(now) {
-        const dt = (now - last) / 1000;
-        last = now;
-
-        x += SPEED_PX_PER_SEC * dt;
-
-        // Wrap precisely at the width of the first set
-        if (x >= firstSetWidth) {
-          // subtract instead of set 0 to avoid accumulating FP error
-          x -= firstSetWidth;
+        function step(now) {
+          if (!running) return;
+          const dt = (now - last) / 1000;
+          last = now;
+          x += SPEED_PX_PER_SEC * dt;
+          if (x >= firstSetWidth) x -= firstSetWidth;
+          track.style.transform = `translate3d(${-x}px,0,0)`;
+          raf = requestAnimationFrame(step);
         }
-
-        track.style.transform = `translate3d(${-x}px,0,0)`;
         raf = requestAnimationFrame(step);
       }
 
-      raf = requestAnimationFrame(step);
-    }
+      function pause() {
+        running = false;
+        cancelAnimationFrame(raf);
+      }
 
-    // Build after images have sizes (handles cache misses), and on resize
-    function initAfterImages() {
-      const imgs = track.querySelectorAll("img");
-      let pending = imgs.length;
-      if (pending === 0) { build(); return; }
+      function build() {
+        pause();
+        const originals = Array.from(track.children).filter(n => n.getAttribute("data-clone") !== "1");
+        track.innerHTML = "";
+        originals.forEach(n => track.appendChild(n));
 
-      imgs.forEach(img => {
-        if (img.complete) {
-          if (--pending === 0) build();
-        } else {
-          const done = () => { if (--pending === 0) build(); };
-          img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
+        firstSetWidth = track.scrollWidth;
+
+        const containerWidth = container.clientWidth;
+        const oneItemWidth = originals[0]?.getBoundingClientRect().width || 0;
+        const gapPx = measureGapPx();
+        const buffer = oneItemWidth + gapPx + 2;
+
+        let total = track.scrollWidth;
+        while ((total - firstSetWidth) < (containerWidth + buffer)) {
+          originals.forEach(n => {
+            const c = n.cloneNode(true);
+            c.setAttribute("data-clone", "1");
+            track.appendChild(c);
+          });
+          total = track.scrollWidth;
         }
-      });
-    }
+        start();
+      }
 
-    window.addEventListener("load", initAfterImages);
-    window.addEventListener("resize", build);
-  })();
-</script>
+      function initAfterImages() {
+        const imgs = track.querySelectorAll("img");
+        let pending = imgs.length;
+        if (pending === 0) { build(); return; }
+        imgs.forEach(img => {
+          if (img.complete) {
+            if (--pending === 0) build();
+          } else {
+            const done = () => { if (--pending === 0) build(); };
+            img.addEventListener("load", done, { once: true });
+            img.addEventListener("error", done, { once: true });
+          }
+        });
+      }
 
+      window.addEventListener("load", initAfterImages);
+      window.addEventListener("resize", build);
 
+      // Expose controls for modal to pause/resume
+      window.carouselControl = { pause, start };
+    })();
+  </script>
 
-<script>
-const audio = document.getElementById("weddingSong");
-const button = document.getElementById("playPauseBtn");
-const iconContainer = document.getElementById("iconContainer");
+  <!-- Audio controls -->
+  <script>
+    const audio = document.getElementById("weddingSong");
+    const button = document.getElementById("playPauseBtn");
+    const iconContainer = document.getElementById("iconContainer");
 
-const playIcon = `
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 5v14l11-7z"/>
-  </svg>`;
-const pauseIcon = `
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-  </svg>`;
+    const playIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
-button.addEventListener("click", () => {
-  if (audio.paused) {
-    audio.play();
-    iconContainer.innerHTML = pauseIcon;
-    button.querySelector("span:last-child").textContent = "Pause";
-  } else {
-    audio.pause();
-    iconContainer.innerHTML = playIcon;
-    button.querySelector("span:last-child").textContent = "Play";
-  }
-});
-
-</script>
-
-
-<script>
-  const faders = document.querySelectorAll('.fade-in');
-
-  const appearOnScroll = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target); // Only fade in once
+    button.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        iconContainer.innerHTML = pauseIcon;
+        button.querySelector("span:last-child").textContent = "Pause";
+      } else {
+        audio.pause();
+        iconContainer.innerHTML = playIcon;
+        button.querySelector("span:last-child").textContent = "Play";
       }
     });
-  }, {
-    threshold: 0.1
-  });
+  </script>
 
-  faders.forEach(fader => {
-    appearOnScroll.observe(fader);
-  });
-</script>
+  <!-- Fade-in on scroll -->
+  <script>
+    const faders = document.querySelectorAll('.fade-in');
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    faders.forEach(fader => appearOnScroll.observe(fader));
+  </script>
 
-<script>
-  const titleText = "Keirra's & Brandon's Wedding";
-  const titleElement = document.getElementById("weddingTitle");
+  <!-- Animated title -->
+  <script>
+    const titleText = "Keirra's & Brandon's Wedding";
+    const titleElement = document.getElementById("weddingTitle");
+    titleElement.innerHTML = titleText
+      .split("")
+      .map((char, i) =>
+        `<span class="letter" style="animation-delay: ${i * 0.08}s">${char === " " ? "&nbsp;" : char}</span>`
+      ).join("");
+  </script>
 
-  titleElement.innerHTML = titleText
-    .split("")
-    .map((char, i) =>
-      `<span class="letter" style="animation-delay: ${i * 0.08}s">${char === " " ? "&nbsp;" : char}</span>`
-    ).join("");
-</script>
-
-    <script>
-  // Modal controls
-  function openRsvpModal(){
-    document.getElementById('rsvpMsg').textContent = '';
-    document.getElementById('rsvpCodeInput').value = '';
-    document.getElementById('rsvpModal').style.display = 'flex';
-    setTimeout(()=>document.getElementById('rsvpCodeInput').focus(),50);
-  }
-  function closeRsvpModal(){ document.getElementById('rsvpModal').style.display = 'none'; }
-
-  // Helpers
-  function norm(s){ return (s||'').toString().trim().toLowerCase(); }
-  function getQuery(k){ return new URLSearchParams(location.search).get(k) || ''; }
-
-  async function loadGuests(){
-    // cache-buster while iterating; remove ?ts= once stable
-    const res = await fetch('./guests.json?ts=' + Date.now(), { cache: 'no-store' });
-    if(!res.ok) throw new Error('Could not load guests.json');
-    return res.json();
-  }
-
-  async function routeByCode(code){
-    const msg = document.getElementById('rsvpMsg');
-    try{
-      const guests = await loadGuests();
-      const match = guests.find(g => norm(g.code) === norm(code));
-      if(!match){ msg.textContent = 'Code not found. Please check the code on your invitation and try again.'; return; }
-      msg.style.color = '#0a5';
-      msg.textContent = 'Redirecting to RSVP…';
-      window.location.href = match.formUrl;  // send to With+1 or No+1 form
-    }catch(e){
-      console.error(e);
-      msg.textContent = 'There was a problem loading the RSVP. Please try again.';
+  <!-- Guests preload + RSVP routing -->
+  <script>
+    let GUESTS = null;
+    async function preloadGuests(){
+      try {
+        const res = await fetch('./guests.json', { cache: 'force-cache' });
+        if (!res.ok) throw new Error('Could not load guests.json');
+        GUESTS = await res.json();
+      } catch(e) { console.warn(e); }
     }
-  }
+    window.addEventListener('load', preloadGuests);
 
-  function submitRsvpCode(){
-    const code = document.getElementById('rsvpCodeInput').value;
-    if(!code){ document.getElementById('rsvpMsg').textContent = 'Please enter your code.'; return; }
-    routeByCode(code);
-  }
+    function norm(s){ return (s||'').toString().trim().toLowerCase(); }
 
-  // Optional: auto-detect ?code= on the landing URL for instant routing
-  (function(){
-    const c = getQuery('code');
-    if(c){ openRsvpModal(); document.getElementById('rsvpCodeInput').value = c; submitRsvpCode(); }
-  })();
+    async function routeByCode(code){
+      const msg = document.getElementById('rsvpMsg');
+      try{
+        if (!Array.isArray(GUESTS)) {
+          const res = await fetch('./guests.json', { cache: 'no-cache' });
+          if (!res.ok) throw new Error('Could not load guests.json');
+          GUESTS = await res.json();
+        }
+        const match = GUESTS.find(g => norm(g.code) === norm(code));
+        if(!match){ msg.textContent = 'Code not found. Please check the code on your invitation and try again.'; return; }
+        msg.style.color = '#0a5';
+        msg.textContent = 'Redirecting to RSVP…';
+        window.location.href = match.formUrl;
+      }catch(e){
+        console.error(e);
+        msg.textContent = 'There was a problem loading the RSVP. Please try again.';
+      }
+    }
+  </script>
 
-  // Keyboard niceties
-  document.addEventListener('keydown', (e) => {
-    const modal = document.getElementById('rsvpModal');
-    if(modal.style.display === 'flex' && e.key === 'Enter') submitRsvpCode();
-    if(modal.style.display === 'flex' && e.key === 'Escape') closeRsvpModal();
-  });
-</script>
+  <!-- Modal controls + keyboard niceties + pause animations -->
+  <script>
+    function openRsvpModal(){
+      document.getElementById('rsvpMsg').textContent = '';
+      document.getElementById('rsvpCodeInput').value = '';
+      document.getElementById('rsvpModal').style.display = 'flex';
+      document.body.classList.add('modal-open');
+      window.carouselControl?.pause();
+      pauseCountdown();
+      setTimeout(()=>document.getElementById('rsvpCodeInput').focus(), 50);
+    }
+    function closeRsvpModal(){
+      document.getElementById('rsvpModal').style.display = 'none';
+      document.body.classList.remove('modal-open');
+      window.carouselControl?.start();
+      startCountdown();
+    }
 
+    function getQuery(k){ return new URLSearchParams(location.search).get(k) || ''; }
+    function submitRsvpCode(){
+      const code = document.getElementById('rsvpCodeInput').value;
+      if(!code){ document.getElementById('rsvpMsg').textContent = 'Please enter your code.'; return; }
+      routeByCode(code);
+    }
 
+    // Auto-detect ?code= on the landing URL
+    (function(){
+      const c = getQuery('code');
+      if(c){ openRsvpModal(); document.getElementById('rsvpCodeInput').value = c; submitRsvpCode(); }
+    })();
 
+    // Keyboard niceties
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('rsvpModal');
+      if(modal.style.display === 'flex' && e.key === 'Enter') submitRsvpCode();
+      if(modal.style.display === 'flex' && e.key === 'Escape') closeRsvpModal();
+    });
+  </script>
+
+  <!-- Lazy-load Google Map when visible -->
+  <script>
+    (function(){
+      const mapHolder = document.getElementById('venueMap');
+      const mapSrc = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau";
+      const o = new IntersectionObserver(es => {
+        es.forEach(e => {
+          if (e.isIntersecting) {
+            const ifr = document.createElement('iframe');
+            ifr.width = "100%";
+            ifr.height = "100%";
+            ifr.style.border = "0";
+            ifr.loading = "lazy";
+            ifr.referrerPolicy = "no-referrer-when-downgrade";
+            ifr.src = mapSrc;
+            mapHolder.appendChild(ifr);
+            o.disconnect();
+          }
+        });
+      }, { threshold: 0.1 });
+      o.observe(mapHolder);
+    })();
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
