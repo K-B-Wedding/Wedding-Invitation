@@ -321,8 +321,8 @@
 .rsvp-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.55); /* ✅ soft dark glassy look without blur */
+  /* REMOVE the backdrop-filter lines */
   display: none;
   align-items: center;
   justify-content: center;
@@ -433,6 +433,12 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* 2) Cheaper background during modal */
+body.modal-open::before { position: absolute !important; }
+
+/* 3) Freeze the map while modal is open */
+body.modal-open .venue iframe { display: none !important; }
 
 body.modal-open * {
   animation-play-state: paused !important;
@@ -806,5 +812,6 @@ button.addEventListener("click", () => {
 
 </body>
 </html>
+
 
 
