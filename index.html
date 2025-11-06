@@ -434,6 +434,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+body.modal-open * {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
 
 
 
@@ -585,9 +590,10 @@
     const container = document.querySelector(".carousel-container");
     const track = document.querySelector(".carousel-track");
 
-    const SPEED_PX_PER_SEC = 105;   // tweak to taste
+    const SPEED_PX_PER_SEC = 105;
     let firstSetWidth = 0;
     let raf = 0;
+    let running = false;
 
     function measureGapPx() {
       const cs = getComputedStyle(track);
@@ -595,27 +601,42 @@
       return parseFloat(g) || 0;
     }
 
-    function build() {
-      cancelAnimationFrame(raf);
+    function start() {
+      if (running) return;
+      running = true;
+      let x = 0;
+      let last = performance.now();
 
-      // 1) Keep originals; remove old clones
+      function step(now) {
+        if (!running) return;
+        const dt = (now - last) / 1000;
+        last = now;
+        x += SPEED_PX_PER_SEC * dt;
+        if (x >= firstSetWidth) x -= firstSetWidth;
+        track.style.transform = `translate3d(${-x}px,0,0)`;
+        raf = requestAnimationFrame(step);
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    function pause() {
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    function build() {
+      pause();
       const originals = Array.from(track.children).filter(n => n.getAttribute("data-clone") !== "1");
       track.innerHTML = "";
       originals.forEach(n => track.appendChild(n));
 
-      // 2) Measure first set width (images need sizes by now)
       firstSetWidth = track.scrollWidth;
 
-      // 3) Ensure there is at least containerWidth worth of content AFTER the first set.
-      //    This guarantees no empty area is ever visible as we approach the wrap point.
       const containerWidth = container.clientWidth;
       const oneItemWidth = originals[0]?.getBoundingClientRect().width || 0;
       const gapPx = measureGapPx();
-
-      // Buffer: one item + one gap to cover half-visible cases and rounding
       const buffer = oneItemWidth + gapPx + 2;
 
-      // Keep cloning the originals until (totalWidth - firstSetWidth) >= (containerWidth + buffer)
       let total = track.scrollWidth;
       while ((total - firstSetWidth) < (containerWidth + buffer)) {
         originals.forEach(n => {
@@ -625,39 +646,13 @@
         });
         total = track.scrollWidth;
       }
-
       start();
     }
 
-    function start() {
-      let x = 0;
-      let last = performance.now();
-
-      function step(now) {
-        const dt = (now - last) / 1000;
-        last = now;
-
-        x += SPEED_PX_PER_SEC * dt;
-
-        // Wrap precisely at the width of the first set
-        if (x >= firstSetWidth) {
-          // subtract instead of set 0 to avoid accumulating FP error
-          x -= firstSetWidth;
-        }
-
-        track.style.transform = `translate3d(${-x}px,0,0)`;
-        raf = requestAnimationFrame(step);
-      }
-
-      raf = requestAnimationFrame(step);
-    }
-
-    // Build after images have sizes (handles cache misses), and on resize
     function initAfterImages() {
       const imgs = track.querySelectorAll("img");
       let pending = imgs.length;
       if (pending === 0) { build(); return; }
-
       imgs.forEach(img => {
         if (img.complete) {
           if (--pending === 0) build();
@@ -671,8 +666,12 @@
 
     window.addEventListener("load", initAfterImages);
     window.addEventListener("resize", build);
+
+    // Expose controls so the modal can pause/resume
+    window.carouselControl = { pause, start };
   })();
 </script>
+
 
 
 
@@ -741,9 +740,15 @@ button.addEventListener("click", () => {
     document.getElementById('rsvpMsg').textContent = '';
     document.getElementById('rsvpCodeInput').value = '';
     document.getElementById('rsvpModal').style.display = 'flex';
+    document.body.classList.add('modal-open');
+    window.carouselControl?.pause();
     setTimeout(()=>document.getElementById('rsvpCodeInput').focus(),50);
   }
-  function closeRsvpModal(){ document.getElementById('rsvpModal').style.display = 'none'; }
+  function closeRsvpModal(){
+    document.getElementById('rsvpModal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+    window.carouselControl?.start();
+  }
 
   // Helpers
   function norm(s){ return (s||'').toString().trim().toLowerCase(); }
@@ -795,3 +800,4 @@ button.addEventListener("click", () => {
 
 </body>
 </html>
+
