@@ -89,10 +89,10 @@
       margin-top: 2px;
     }
 
-    /* RSVP button now links directly to the form */
+    /* RSVP link button */
     .rsvp-button {
       display: inline-block;
-      margin: 20px 0;
+      margin: 20px 0 6px 0;
       padding: 12px 24px;
       font-size: 1.1rem;
       background: rgba(255, 255, 255, 0.1);
@@ -110,6 +110,40 @@
       background: rgba(255, 255, 255, 0.25);
       border-color: white;
       transform: scale(1.03);
+    }
+
+    /* Small caption under RSVP */
+    .rsvp-deadline {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    /* Key details list */
+    .details {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+      display: inline-block;
+    }
+    .details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .details li {
+      margin: 10px 0;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 10px;
+    }
+    .details .label {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .details .time {
+      white-space: nowrap;
     }
 
     .photo-collage {
@@ -155,6 +189,7 @@
       .countdown-box .digit { font-size: 1.5rem; }
       .countdown-box .label { font-size: 0.8rem; }
       .photo-collage img { width: 100px; height: 100px; }
+      .details { text-align: left; }
     }
 
     /* Tablets+ */
@@ -275,11 +310,23 @@
     <h2>You're Invited!</h2>
     <p>Join us for our special day by the sea.</p>
 
-    <!-- Direct RSVP link (no modal, no code) -->
+    <!-- Direct RSVP link -->
     <a
       class="rsvp-button"
       href="https://docs.google.com/forms/d/e/1FAIpQLScY3FTk2hkgvzT7eNJMLhFwH0n-sqEwdHWkqxUC046T5DVTWg/viewform?usp=dialog"
     >💌 RSVP Now</a>
+    <div class="rsvp-deadline">Please RSVP by <strong>15 December 2025</strong>.</div>
+  </section>
+
+  <!-- New Key Details section -->
+  <section class="fade-in">
+    <h2>Key Details</h2>
+    <div class="details">
+      <ul>
+        <li><span class="label">Arrival:</span> <span class="time">2:30 PM <small>(14:30)</small></span></li>
+        <li><span class="label">Ceremony:</span> <span class="time">3:00 PM <small>(15:00)</small></span></li>
+      </ul>
+    </div>
   </section>
 
   <section class="our-song">
@@ -331,23 +378,19 @@
 
   <section class="faq fade-in">
     <h2>FAQ</h2>
-    <p><strong>What time should I arrive?</strong><br> Please arrive by 3:45 PM.</p>
+    <p><strong>What time should I arrive?</strong><br> Please arrive by 2:30 PM (14:30). Ceremony begins at 3:00 PM (15:00).</p>
     <p><strong>Is the venue accessible?</strong><br> Yes, it is wheelchair-friendly.</p>
     <p><strong>Can I bring a guest?</strong><br> Only guests listed on the invite.</p>
   </section>
 
   <section class="attire fade-in">
     <h2>Attire</h2>
-    <p>Beach formal: Linen, sundresses, and comfy sandals. Avoid heels etc.</p>
+    <p><strong>Beach Formal.</strong> No shorts. No thongs.</p>
   </section>
 
   <section class="reminders fade-in">
-    <h2>Reminders</h2>
-    <ul>
-      <li>No boxed gifts, please – envelopes only.</li>
-      <li>Adults-only event – thank you for understanding.</li>
-      <li>Arrive early to enjoy the view.</li>
-    </ul>
+    <h2>Gifts</h2>
+    <p>Your presence is the greatest gift, but if you wish to contribute, a monetary gift would help us start our life together.</p>
   </section>
 
   <section class="venue fade-in">
@@ -384,7 +427,7 @@
     setInterval(updateCountdown, 1000);
   </script>
 
-  <!-- Carousel (unchanged, continues smoothly) -->
+  <!-- Carousel -->
   <script>
     (function () {
       const container = document.querySelector(".carousel-container");
@@ -480,7 +523,6 @@
         resizeId = setTimeout(() => { build(); start(); }, 120);
       });
 
-      // Expose if you ever want manual control
       window.carouselControl = { pause, start };
     })();
   </script>
