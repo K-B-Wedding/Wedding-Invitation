@@ -77,6 +77,9 @@
         0 2px 4px rgba(0,0,0,0.55);
       word-spacing: 0.1em;
     }
+    /* Do not wrap inside each word; only allow breaks between words */
+    h1 .word { display: inline-block; white-space: nowrap; }
+
 
     h2, p, li, button, a {
       font-family: 'Raleway', sans-serif;
@@ -611,15 +614,23 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
   </script>
 
-  <!-- Title animation with WORD JOINER to prevent splitting "’s" across lines -->
   <script>
-    // U+2060 (WORD JOINER) before each apostrophe prevents breaks like Brandon' \n s
-    const titleText = "Keirra\u2060's & Brandon\u2060's Wedding";
-    const titleElement = document.getElementById("weddingTitle");
-    titleElement.innerHTML = titleText
-      .split("")
-      .map((char, i) => `<span class="letter" style="animation-delay: ${i * 0.08}s">${char === " " ? "&nbsp;" : char}</span>`)
-      .join("");
-  </script>
+  // Words we want kept intact; add WORD JOINER before each apostrophe
+  const words = ["Keirra\u2060's", "&", "Brandon\u2060's", "Wedding"];
+  const titleElement = document.getElementById("weddingTitle");
+
+  // Build: one .word wrapper per word, letters inside remain animated
+  const html = words.map((word, wi) => {
+    const letters = word.split("").map((ch, i) =>
+      `<span class="letter" style="animation-delay:${(wi*word.length + i)*0.08}s">${ch === " " ? "&nbsp;" : ch}</span>`
+    ).join("");
+    // normal space between words (browser may break here, not inside)
+    return `<span class="word">${letters}</span>${wi < words.length-1 ? " " : ""}`;
+  }).join("");
+
+  titleElement.innerHTML = html;
+</script>
+
 </body>
 </html>
+
