@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport" content="
+    width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no,
+    viewport-fit=cover
+  " />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -14,6 +17,7 @@
 
   <style>
     /* -------- Base styles -------- */
+    html, body { height: 100%; }
     body {
       font-family: 'Raleway', sans-serif;
       margin: 0;
@@ -21,20 +25,31 @@
       color: white;
       text-align: center;
       position: relative;
-      min-height: 100vh;
+      min-height: 100%;
       overflow-x: hidden;
-      background-color: #000; /* fallback */
+      background: #0a0a0a; /* safety color during any resize */
     }
 
-    /* Dedicated background element (desktop = fixed, mobile = body background) */
+    /* Fixed background as a real element (Android-friendly) */
     .bg {
       position: fixed;
-      inset: 0;
+      left: 0; right: 0;
       z-index: -1;
+      pointer-events: none;
       background-image: url('cavesBeachBackground.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+
+      /* Cover the address-bar collapse/expand on Android */
+      top: -10svh;
+      bottom: -10svh;
+
+      /* Fallbacks for browsers without *vh variants */
+      height: calc(var(--vh, 1vh) * 120);
+      width: 100%;
+
+      /* Keep on compositor to avoid jank */
       will-change: transform;
       transform: translateZ(0);
     }
@@ -48,21 +63,9 @@
       .page-zoom-wrap {
         transform: scale(var(--desktop-scale));
         transform-origin: top center;
+        /* Compensate layout width so content still fits the viewport */
         width: calc(100% / var(--desktop-scale));
         margin: 0 auto;
-      }
-    }
-
-    /* On touch devices (Android/iOS), avoid fixed backgrounds.
-       Hide .bg and paint the background on body instead to stop "shifting". */
-    @media (hover: none) and (pointer: coarse) {
-      .bg { display: none; }
-      body {
-        background-image: url('cavesBeachBackground.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: scroll;
       }
     }
 
@@ -377,7 +380,7 @@
 </head>
 
 <body>
-  <!-- Desktop background layer (hidden on touch devices) -->
+  <!-- Android-safe fixed background -->
   <div class="bg" aria-hidden="true"></div>
 
   <div class="page-zoom-wrap">
@@ -474,7 +477,6 @@
           We’re keeping our day heartfelt and personal.<br>
           Plus ones may be included at the discretion of the bride and groom.
       </p>
-
     </section>
 
     <section class="attire fade-in">
@@ -502,6 +504,18 @@
     </footer>
   </div>
 
+  <!-- Stable viewport height for Android Chrome (first scroll gap fix) -->
+  <script>
+    (function setVH() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    })();
+    window.addEventListener('resize', () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+  </script>
+
   <!-- Countdown -->
   <script>
     const weddingDate = new Date("2026-02-07T16:00:00").getTime();
@@ -523,23 +537,23 @@
   </script>
 
   <script>
-  (function(){
-    const txt = document.getElementById("datePillText");
-    const d = new Date(weddingDate);
+    (function(){
+      const txt = document.getElementById("datePillText");
+      const d = new Date(weddingDate);
 
-    // Get day number + suffix
-    const day = d.getDate();
-    const suffix =
-      (day % 10 === 1 && day !== 11) ? "st" :
-      (day % 10 === 2 && day !== 12) ? "nd" :
-      (day % 10 === 3 && day !== 13) ? "rd" : "th";
+      // Get day number + suffix
+      const day = d.getDate();
+      const suffix =
+        (day % 10 === 1 && day !== 11) ? "st" :
+        (day % 10 === 2 && day !== 12) ? "nd" :
+        (day % 10 === 3 && day !== 13) ? "rd" : "th";
 
-    const weekday = d.toLocaleDateString('en-AU', { weekday: 'long' });
-    const month = d.toLocaleDateString('en-AU', { month: 'long' });
-    const year = d.getFullYear();
+      const weekday = d.toLocaleDateString('en-AU', { weekday: 'long' });
+      const month = d.toLocaleDateString('en-AU', { month: 'long' });
+      const year = d.getFullYear();
 
-    txt.textContent = `${weekday} ${month} ${day}${suffix}, ${year}`;
-  })();
+      txt.textContent = `${weekday} ${month} ${day}${suffix}, ${year}`;
+    })();
   </script>
 
   <!-- Carousel -->
@@ -690,7 +704,7 @@
     const titleElement = document.getElementById("weddingTitle");
 
     // Tuning knobs
-    const PER_LETTER = 0.06;   // seconds between letters in the same word
+    const PER_LETTER = 0.06;    // seconds between letters in the same word
     const BETWEEN_WORDS = 0.20; // small pause between words
 
     const html = words.map((word, w) => {
@@ -699,7 +713,6 @@
         const delay = (base + i * PER_LETTER).toFixed(2);
         return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
       }).join("");
-      // normal space between words so the browser can wrap there (not inside)
       return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
     }).join("");
 
