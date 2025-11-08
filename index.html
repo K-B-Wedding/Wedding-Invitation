@@ -131,6 +131,23 @@
       margin-top: 2px;
     }
 
+    /* Date pill under countdown */
+.date-pill{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 16px;
+  background: rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.45);
+  border-radius:9999px;            /* fully rounded */
+  backdrop-filter: blur(6px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  font-weight:700;
+  letter-spacing: .015em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+}
+.date-pill .icon{ margin-right:8px; opacity:.9; }
+
+
     /* RSVP link button */
     .rsvp-button {
       display: inline-block;
@@ -350,6 +367,10 @@
         <div class="countdown-box"><span class="digit" id="minutes">00</span><span class="label">MINUTES</span></div>
         <div class="countdown-box"><span class="digit" id="seconds">00</span><span class="label">SECONDS</span></div>
       </div>
+
+      <div class="date-pill" id="datePill" aria-label="Wedding date">
+  <span class="icon">📅</span><span id="datePillText">Loading…</span>
+</div>
     </header>
 
     <section>
@@ -475,6 +496,23 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
   </script>
+
+  <script>
+  (function(){
+    // Use the same weddingDate you already defined
+    const pillEl = document.getElementById("datePillText");
+    if(!pillEl) return;
+
+    // Format as: Sat, 7 Feb 2026
+    const d = new Date(weddingDate);
+    const formatted = d.toLocaleDateString('en-AU', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+
+    pillEl.textContent = formatted;
+  })();
+</script>
+
 
   <!-- Carousel -->
   <script>
@@ -643,6 +681,7 @@
 
 </body>
 </html>
+
 
 
 
