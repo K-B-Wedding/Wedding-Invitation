@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -10,23 +13,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    /* --- FIX FOR ANDROID BACKGROUND SHIFTING --- */
-    html, body {
-      height: 100%;
-    }
-
+    /* -------- Base styles -------- */
     body {
       font-family: 'Raleway', sans-serif;
       margin: 0;
       padding: 0;
       color: white;
       text-align: center;
-      overflow: hidden; /* stops viewport shift affecting background */
       position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #000; /* fallback */
     }
 
-    /* Stable non-moving full-screen background */
-    #backdrop {
+    /* Dedicated background element (desktop = fixed, mobile = body background) */
+    .bg {
       position: fixed;
       inset: 0;
       z-index: -1;
@@ -34,28 +35,14 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      transform: translateZ(0);
       will-change: transform;
-      backface-visibility: hidden;
+      transform: translateZ(0);
     }
 
-    /* This now scrolls instead of body */
-    .page-zoom-wrap {
-      height: 100svh;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: none;
-      contain: layout paint;
-      transform: none;
-    }
+    /* Wrapper that we scale only on desktop to simulate ~150% zoom */
+    .page-zoom-wrap { transform: none; }
 
-    @supports (height: 100dvh) {
-      .page-zoom-wrap {
-        height: 100dvh;
-      }
-    }
-
-    /* Desktop zoom */
+    /* Desktop-only scale (~1.5x). Targets devices with a mouse/trackpad pointer. */
     @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
       :root { --desktop-scale: 1.5; }
       .page-zoom-wrap {
@@ -63,12 +50,21 @@
         transform-origin: top center;
         width: calc(100% / var(--desktop-scale));
         margin: 0 auto;
-        height: auto;
-        overflow: visible;
       }
     }
 
-    /* -------- Original Styles (unchanged) -------- */
+    /* On touch devices (Android/iOS), avoid fixed backgrounds.
+       Hide .bg and paint the background on body instead to stop "shifting". */
+    @media (hover: none) and (pointer: coarse) {
+      .bg { display: none; }
+      body {
+        background-image: url('cavesBeachBackground.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+      }
+    }
 
     header {
       padding: 170px 20px 0px 20px;
@@ -80,22 +76,39 @@
       background-color: rgba(0, 0, 0, 0.4);
     }
 
+    /* Sharper text on WebKit + crisper "neon" */
+    h1, h2, p, li, button, a {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
     h1 {
       font-family: 'Great Vibes', cursive;
       font-size: 3rem;
+      color: white;
       text-shadow:
         0 0 1px rgba(255,255,255,0.9),
         0 0 6px rgba(255,255,255,0.55),
         0 2px 4px rgba(0,0,0,0.55);
       word-spacing: 0.1em;
     }
+    /* Do not wrap inside each word; only allow breaks between words */
     h1 .word { display: inline-block; white-space: nowrap; }
 
+    h2, p, li, button, a {
+      font-family: 'Raleway', sans-serif;
+      color: white;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Mobile sizing so we never overflow and split inside words */
     @media (max-width: 430px) {
       h1 {
         font-size: clamp(2.2rem, 9vw, 3rem);
         line-height: 1.1;
         white-space: normal;
+        word-break: normal;
+        overflow-wrap: normal;
       }
     }
 
@@ -112,7 +125,7 @@
     }
 
     .countdown-box {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       padding: 6px;
       border-radius: 8px;
       flex: 1 1 22%;
@@ -155,6 +168,7 @@
       box-shadow: 0 0 6px rgba(255,255,255,0.8);
     }
 
+    /* RSVP link button */
     .rsvp-button {
       display: inline-block;
       margin: 20px 0 6px 0;
@@ -177,48 +191,196 @@
       transform: scale(1.03);
     }
 
-    .rsvp-deadline { font-size: 0.9rem; opacity: 0.9; margin-top: 6px; }
+    /* Small caption under RSVP */
+    .rsvp-deadline {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
 
-    .details { max-width: 700px; margin: 0 auto; text-align: left; display: inline-block; }
-    .details ul { list-style: none; padding: 0; margin: 0; }
-    .details li { margin: 10px 0; padding: 10px 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; }
+    /* Key details list */
+    .details {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+      display: inline-block;
+    }
+    .details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .details li {
+      margin: 10px 0;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 10px;
+    }
+    .details .label {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .details .time {
+      white-space: nowrap;
+    }
 
-    .photo-collage img, .carousel-track img {
+    .photo-collage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .photo-collage img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    }
+
+    .entourage ul { list-style-type: none; padding: 0; }
+    .entourage li { margin: 10px 0; }
+
+    .faq, .attire, .reminders {
+      text-align: center;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .reminders ul {
+      list-style-position: inside;
+      display: inline-block;
+      text-align: left;
+      padding: 0;
+      margin: 0 auto;
+    }
+
+    .venue iframe {
+      width: 90%;
+      height: 300px;
+      border: none;
+    }
+
+    /* Phones */
+    @media screen and (max-width: 400px) {
+      .countdown-box { flex: 1 1 40%; padding: 8px; margin: 0 auto; }
+      .countdown-box .digit { font-size: 1.5rem; }
+      .countdown-box .label { font-size: 0.8rem; }
+      .photo-collage img { width: 100px; height: 100px; }
+      .details { text-align: left; }
+    }
+
+    /* Tablets+ */
+    @media screen and (min-width: 768px) {
+      .countdown-box {
+        padding: 10px 6px;
+        border-radius: 6px;
+        flex: 1 1 20%;
+        max-width: 160px;
+      }
+      .countdown-box .digit { font-size: 1.8rem; }
+      .countdown-box .label { font-size: 0.85rem; }
+    }
+
+    /* Carousel */
+    .carousel-container {
+      width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      display: block;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+    }
+
+    .img-top { object-position: 50% 15%; }
+
+    .carousel-track img {
       width: 180px;
       height: 165px;
       object-fit: cover;
       border-radius: 14px;
       flex-shrink: 0;
+      display: block;
       overflow: hidden;
       background-color: rgba(255,255,255,0.05);
+      clip-path: inset(0 round 14px);
+      -webkit-clip-path: inset(0 round 14px);
     }
 
-    .carousel-container { width: 600px; margin: 0 auto; overflow: hidden; display: block; }
-    .carousel-track { display: flex; gap: 20px; padding: 20px 0; will-change: transform; }
+    @media screen and (max-width: 600px) {
+      .carousel-container { width: 100%; padding: 10px 10px; }
+      .carousel-track img { width: 100px; height: 150px; }
+    }
 
-    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
 
-    .our-song { background-color: rgba(0, 0, 0, 0.4); padding: 30px 20px; text-align: center; }
-    .our-song h2 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; margin-bottom: 10px; }
-    #playPauseBtn { display: inline-flex; align-items: center; padding: 10px 20px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); color: white; cursor: pointer; }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .fade-in.visible {
+      opacity: 1; transform: translateY(0);
+    }
 
-    .letter { opacity: 0; display: inline-block; transform: translateY(20px); animation: fadeUp 0.6s forwards; }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .our-song {
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .our-song h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    #playPauseBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    #playPauseBtn:hover { background: rgba(255, 255, 255, 0.18); border-color: white; }
 
+    .letter {
+      opacity: 0;
+      display: inline-block;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s forwards;
+      text-shadow:
+        0 0 1px rgba(255,255,255,0.9),
+        0 0 6px rgba(255,255,255,0.55),
+        0 2px 4px rgba(0,0,0,0.55);
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 
 <body>
+  <!-- Desktop background layer (hidden on touch devices) -->
+  <div class="bg" aria-hidden="true"></div>
 
-  <!-- FIXED BACKGROUND -->
-  <div id="backdrop" aria-hidden="true"></div>
-
-  <!-- CONTENT WRAPPER (NOW THE SCROLLER) -->
   <div class="page-zoom-wrap">
-
-    <!-- EVERYTHING BELOW IS EXACTLY YOUR ORIGINAL CONTENT -->
-
     <header>
       <h1 id="weddingTitle"></h1>
 
@@ -240,14 +402,20 @@
       <h2>You're Invited!</h2>
       <p>Join us for our special day by the sea.</p>
 
-      <a class="rsvp-button" href="https://docs.google.com/forms/d/e/1FAIpQLScY3FTk2hkgvzT7eNJMLhFwH0n-sqEwdHWkqxUC046T5DVTWg/viewform?usp=dialog">💌 RSVP Now</a>
+      <!-- Direct RSVP link -->
+      <a
+        class="rsvp-button"
+        href="https://docs.google.com/forms/d/e/1FAIpQLScY3FTk2hkgvzT7eNJMLhFwH0n-sqEwdHWkqxUC046T5DVTWg/viewform?usp=dialog"
+      >💌 RSVP Now</a>
       <div class="rsvp-deadline">Please RSVP by <strong>15 December 2025</strong>.</div>
     </section>
 
     <section class="our-song">
       <h2>Our Song</h2>
       <button id="playPauseBtn" aria-label="Play">
-        <span id="iconContainer"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
+        <span id="iconContainer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+        </span>
         <span style="margin-left: 8px;">Play</span>
       </button>
       <audio id="weddingSong" src="ourSong.mp3"></audio>
@@ -257,34 +425,35 @@
       <h2>Our Journey</h2>
       <div class="carousel-container">
         <div class="carousel-track">
-          <img src="KB1.jpg" />
-          <img src="KB2.jpg" />
-          <img src="KB3.jpg" />
-          <img src="KB4.jpg" />
-          <img src="KB5.jpg" />
-          <img src="KB6.jpg" />
-          <img src="KB7.jpg" />
-          <img src="KB8.jpg" class="img-top" />
-          <img src="KB9.jpg" class="img-top" />
-          <img src="KB10.jpg" />
-          <img src="KB11.jpg" />
-          <img src="KB12.jpg" />
-          <img src="KB13.jpg" />
-          <img src="KB14.jpg" />
-          <img src="KB15.jpg" />
-          <img src="KB16.jpg" />
-          <img src="KB17.jpg" />
-          <img src="KB18.jpg" />
+          <img src="KB1.jpg" alt="2" />
+          <img src="KB2.jpg" alt="3" />
+          <img src="KB3.jpg" alt="4" />
+          <img src="KB4.jpg" alt="5" />
+          <img src="KB5.jpg" alt="6" />
+          <img src="KB6.jpg" alt="7" />
+          <img src="KB7.jpg" alt="8" />
+          <img src="KB8.jpg" class="img-top" alt="9">
+          <img src="KB9.jpg" class="img-top" alt="10">
+          <img src="KB10.jpg" alt="11" />
+          <img src="KB11.jpg" alt="12" />
+          <img src="KB12.jpg" alt="13" />
+          <img src="KB13.jpg" alt="14" />
+          <img src="KB14.jpg" alt="15" />
+          <img src="KB15.jpg" alt="16" />
+          <img src="KB16.jpg" alt="17" />
+          <img src="KB17.jpg" alt="18" />
+          <img src="KB18.jpg" alt="19" />
         </div>
       </div>
     </section>
 
+    <!-- Key Details -->
     <section class="fade-in">
       <h2>Key Details</h2>
       <div class="details">
         <ul>
-          <li><span class="label">Arrival:</span> 2:30 PM</li>
-          <li><span class="label">Ceremony:</span> 3:00 PM</li>
+          <li><span class="label">Arrival:</span> <span class="time">2:30 PM <small>(14:30)</small></span></li>
+          <li><span class="label">Ceremony:</span> <span class="time">3:00 PM <small>(15:00)</small></span></li>
         </ul>
       </div>
     </section>
@@ -302,8 +471,10 @@
     <section class="faq fade-in">
       <h2>❓FAQ❓</h2>
       <p><strong>Can I bring a guest?</strong><br>
-      We’re keeping our day heartfelt and personal.<br>
-      Plus ones may be included at the discretion of the bride and groom.</p>
+          We’re keeping our day heartfelt and personal.<br>
+          Plus ones may be included at the discretion of the bride and groom.
+      </p>
+
     </section>
 
     <section class="attire fade-in">
@@ -319,91 +490,220 @@
     <section class="venue fade-in">
       <h2>📌Venue📌</h2>
       <p>Caves Coastal, Newcastle, Caves Beach</p>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0" width="90%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </section>
 
     <footer style="padding: 20px; text-align: center; background-color: rgba(0,0,0,0.3); color: white;">
       <p>#KeirraAndBrandon2026 • 📍
-        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/" target="_blank" style="color: #fff; text-decoration: underline;">
+        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
           Caves Beach Venue
         </a>
       </p>
     </footer>
-
   </div>
 
-  <!-- Countdown Script -->
+  <!-- Countdown -->
   <script>
     const weddingDate = new Date("2026-02-07T16:00:00").getTime();
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = weddingDate - now;
       if (distance < 0) { document.querySelector('.countdown').innerHTML = "We're Married! 💍"; return; }
-      document.getElementById("days").innerText = String(Math.floor(distance / (1000*60*60*24))).padStart(2,'0');
-      document.getElementById("hours").innerText = String(Math.floor((distance%(1000*60*60*24))/(1000*60*60))).padStart(2,'0');
-      document.getElementById("minutes").innerText = String(Math.floor((distance%(1000*60*60))/(1000*60))).padStart(2,'0');
-      document.getElementById("seconds").innerText = String(Math.floor((distance%(1000*60))/1000)).padStart(2,'0');
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      document.getElementById("days").innerText = String(days).padStart(2, '0');
+      document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+      document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+      document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
     };
-    updateCountdown(); setInterval(updateCountdown, 1000);
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 
   <script>
-    (function(){
-      const txt = document.getElementById("datePillText");
-      const d = new Date(weddingDate);
-      const day = d.getDate();
-      const suffix = (day%10===1&&day!==11)?"st":(day%10===2&&day!==12)?"nd":(day%10===3&&day!==13)?"rd":"th";
-      txt.textContent = `${d.toLocaleDateString('en-AU',{weekday:'long'})} ${d.toLocaleDateString('en-AU',{month:'long'})} ${day}${suffix}, ${d.getFullYear()}`;
-    })();
+  (function(){
+    const txt = document.getElementById("datePillText");
+    const d = new Date(weddingDate);
+
+    // Get day number + suffix
+    const day = d.getDate();
+    const suffix =
+      (day % 10 === 1 && day !== 11) ? "st" :
+      (day % 10 === 2 && day !== 12) ? "nd" :
+      (day % 10 === 3 && day !== 13) ? "rd" : "th";
+
+    const weekday = d.toLocaleDateString('en-AU', { weekday: 'long' });
+    const month = d.toLocaleDateString('en-AU', { month: 'long' });
+    const year = d.getFullYear();
+
+    txt.textContent = `${weekday} ${month} ${day}${suffix}, ${year}`;
+  })();
   </script>
 
+  <!-- Carousel -->
   <script>
     (function () {
       const container = document.querySelector(".carousel-container");
       const track = document.querySelector(".carousel-track");
-      const SPEED = 105;
-      let width = 0, raf, x = 0, last = 0;
+      const SPEED_PX_PER_SEC = 105;
+      let firstSetWidth = 0;
+      let raf = 0;
+      let running = false;
+      let x = 0;
+      let last = 0;
 
-      function step(now){
-        const dt=(now-last)/1000; last=now; x+=SPEED*dt;
-        if(width>0) x%=width;
-        track.style.transform=`translate3d(${-x}px,0,0)`;
-        raf=requestAnimationFrame(step);
+      function measureGapPx() {
+        const cs = getComputedStyle(track);
+        const g = cs.gap || cs.columnGap || "0px";
+        return parseFloat(g) || 0;
       }
-      function build(){
-        const orig=[...track.children].filter(n=>!n.dataset.clone);
-        track.innerHTML=""; orig.forEach(n=>track.appendChild(n));
-        width=track.scrollWidth;
-        while(track.scrollWidth<container.clientWidth*2){
-          orig.forEach(n=>{const c=n.cloneNode(true);c.dataset.clone=1;track.appendChild(c);});
+
+      function step(now) {
+        if (!running) return;
+        const dt = (now - last) / 1000;
+        last = now;
+        x += SPEED_PX_PER_SEC * dt;
+        if (firstSetWidth > 0) x %= firstSetWidth;
+        track.style.transform = `translate3d(${-x}px,0,0)`;
+        raf = requestAnimationFrame(step);
+      }
+
+      function start() {
+        if (running) return;
+        running = true;
+        last = performance.now();
+        raf = requestAnimationFrame(step);
+      }
+
+      function pause() {
+        running = false;
+        cancelAnimationFrame(raf);
+      }
+
+      function build() {
+        const prevWidth = firstSetWidth;
+        const originals = Array.from(track.children).filter(n => n.getAttribute("data-clone") !== "1");
+        track.innerHTML = "";
+        originals.forEach(n => track.appendChild(n));
+
+        firstSetWidth = track.scrollWidth;
+
+        const containerWidth = container.clientWidth;
+        const oneItemWidth = originals[0]?.getBoundingClientRect().width || 0;
+        const gapPx = measureGapPx();
+        const buffer = oneItemWidth + gapPx + 2;
+
+        let total = track.scrollWidth;
+        while ((total - firstSetWidth) < (containerWidth + buffer)) {
+          originals.forEach(n => {
+            const c = n.cloneNode(true);
+            c.setAttribute("data-clone", "1");
+            track.appendChild(c);
+          });
+          total = track.scrollWidth;
         }
+
+        if (prevWidth > 0 && firstSetWidth > 0) {
+          const ratio = x / prevWidth;
+          x = (ratio * firstSetWidth) % firstSetWidth;
+        } else {
+          x = x % (firstSetWidth || 1);
+        }
+        track.style.transform = `translate3d(${-x}px,0,0)`;
       }
-      window.addEventListener("load",()=>{build();last=performance.now();raf=requestAnimationFrame(step);});
-      window.addEventListener("resize",()=>{cancelAnimationFrame(raf);build();last=performance.now();raf=requestAnimationFrame(step);});
+
+      function initAfterImages() {
+        const imgs = track.querySelectorAll("img");
+        let pending = imgs.length;
+        if (pending === 0) { build(); start(); return; }
+        imgs.forEach(img => {
+          if (img.complete) {
+            if (--pending === 0) { build(); start(); }
+          } else {
+            const done = () => { if (--pending === 0) { build(); start(); } };
+            img.addEventListener("load", done, { once: true });
+            img.addEventListener("error", done, { once: true });
+          }
+        });
+      }
+
+      window.addEventListener("load", initAfterImages);
+
+      let resizeId;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeId);
+        pause();
+        resizeId = setTimeout(() => { build(); start(); }, 120);
+      });
+
+      window.carouselControl = { pause, start };
     })();
   </script>
 
+  <!-- Audio button -->
   <script>
-    const audio=document.getElementById("weddingSong");
-    const btn=document.getElementById("playPauseBtn");
-    const ic=document.getElementById("iconContainer");
-    const playIcon=`<svg width="22" height="22" fill="#fff"><path d="M8 5v14l11-7z"/></svg>`;
-    const pauseIcon=`<svg width="22" height="22" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-    btn.onclick=()=>{if(audio.paused){audio.play();ic.innerHTML=pauseIcon;btn.lastChild.textContent=" Pause";}else{audio.pause();ic.innerHTML=playIcon;btn.lastChild.textContent=" Play";}};
+    const audio = document.getElementById("weddingSong");
+    const button = document.getElementById("playPauseBtn");
+    const iconContainer = document.getElementById("iconContainer");
+
+    const playIcon = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5v14l11-7z"/>
+      </svg>`;
+    const pauseIcon = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>`;
+
+    button.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        iconContainer.innerHTML = pauseIcon;
+        button.querySelector("span:last-child").textContent = "Pause";
+      } else {
+        audio.pause();
+        iconContainer.innerHTML = playIcon;
+        button.querySelector("span:last-child").textContent = "Play";
+      }
+    });
+  </script>
+
+  <!-- Fade-ins -->
+  <script>
+    const faders = document.querySelectorAll('.fade-in');
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    faders.forEach(fader => appearOnScroll.observe(fader));
   </script>
 
   <script>
-    const faders=document.querySelectorAll('.fade-in');
-    const obs=new IntersectionObserver((entries,o)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');o.unobserve(e.target);}})}, {threshold:0.1});
-    faders.forEach(f=>obs.observe(f));
-  </script>
+    // Keep ’s glued to the word with WORD JOINER (U+2060)
+    const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
+    const titleElement = document.getElementById("weddingTitle");
 
-  <script>
-    const words=["Keirra","&","Brandon\u2060's","Wedding"];
-    const el=document.getElementById("weddingTitle");
-    const PER=0.06, GAP=0.20;
-    el.innerHTML=words.map((w,i)=>`<span class="word">${[...w].map((c,j)=>`<span class="letter" style="animation-delay:${(i*GAP+j*PER).toFixed(2)}s">${c}</span>`).join("")}</span>${i<words.length-1?" ":""}`).join("");
-  </script>
+    // Tuning knobs
+    const PER_LETTER = 0.06;   // seconds between letters in the same word
+    const BETWEEN_WORDS = 0.20; // small pause between words
 
+    const html = words.map((word, w) => {
+      const base = w * BETWEEN_WORDS; // tiny offset for each word
+      const letters = [...word].map((ch, i) => {
+        const delay = (base + i * PER_LETTER).toFixed(2);
+        return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
+      }).join("");
+      // normal space between words so the browser can wrap there (not inside)
+      return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
+    }).join("");
+
+    titleElement.innerHTML = html;
+  </script>
 </body>
 </html>
