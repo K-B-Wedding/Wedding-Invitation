@@ -2,13 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="
-    width=device-width,
-    initial-scale=1.0,
-    maximum-scale=1.0,
-    user-scalable=no,
-    viewport-fit=cover
-  " />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -17,7 +11,16 @@
 
   <style>
     /* -------- Base styles -------- */
-    html, body { height: 100%; }
+    :root {
+      /* JS fallback fills this with window.innerHeight on Android if needed */
+      --vh: 100vh;
+      --desktop-scale: 1.5;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
     body {
       font-family: 'Raleway', sans-serif;
       margin: 0;
@@ -27,43 +30,47 @@
       position: relative;
       min-height: 100%;
       overflow-x: hidden;
-      background: #0a0a0a; /* safety color during any resize */
+      background: #000; /* safety color behind bg image */
     }
 
-    /* Fixed background as a real element (Android-friendly) */
+    /* ===== Fixed background layer (stable on Android) ===== */
     .bg {
       position: fixed;
-      left: 0; right: 0;
+      inset: 0;
+      /* Large viewport unit covers both expanded/collapsed toolbar states */
+      height: 100lvh;
+      /* Fallback to JS-provided innerHeight for older Androids */
+      min-height: calc(var(--vh) * 1);
+      width: 100%;
       z-index: -1;
-      pointer-events: none;
       background-image: url('cavesBeachBackground.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-
-      /* Cover the address-bar collapse/expand on Android */
-      top: -10svh;
-      bottom: -10svh;
-
-      /* Fallbacks for browsers without *vh variants */
-      height: calc(var(--vh, 1vh) * 120);
-      width: 100%;
-
-      /* Keep on compositor to avoid jank */
-      will-change: transform;
+      /* Promote to its own layer to avoid jank */
       transform: translateZ(0);
+      will-change: transform;
+    }
+
+    /* Gentle darken overlay so text is readable across sections */
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      pointer-events: none;
     }
 
     /* Wrapper that we scale only on desktop to simulate ~150% zoom */
-    .page-zoom-wrap { transform: none; }
+    .page-zoom-wrap {
+      transform: none;
+    }
 
-    /* Desktop-only scale (~1.5x). Targets devices with a mouse/trackpad pointer. */
+    /* Desktop-only scale. Keeps desktop scrolling because wrapper height remains > viewport. */
     @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
-      :root { --desktop-scale: 1.5; }
       .page-zoom-wrap {
         transform: scale(var(--desktop-scale));
         transform-origin: top center;
-        /* Compensate layout width so content still fits the viewport */
         width: calc(100% / var(--desktop-scale));
         margin: 0 auto;
       }
@@ -380,7 +387,7 @@
 </head>
 
 <body>
-  <!-- Android-safe fixed background -->
+  <!-- Fixed, stable background -->
   <div class="bg" aria-hidden="true"></div>
 
   <div class="page-zoom-wrap">
@@ -504,18 +511,6 @@
     </footer>
   </div>
 
-  <!-- Stable viewport height for Android Chrome (first scroll gap fix) -->
-  <script>
-    (function setVH() {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    })();
-    window.addEventListener('resize', () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    });
-  </script>
-
   <!-- Countdown -->
   <script>
     const weddingDate = new Date("2026-02-07T16:00:00").getTime();
@@ -536,22 +531,19 @@
     setInterval(updateCountdown, 1000);
   </script>
 
+  <!-- Stable date pill text -->
   <script>
     (function(){
       const txt = document.getElementById("datePillText");
       const d = new Date(weddingDate);
-
-      // Get day number + suffix
       const day = d.getDate();
       const suffix =
         (day % 10 === 1 && day !== 11) ? "st" :
         (day % 10 === 2 && day !== 12) ? "nd" :
         (day % 10 === 3 && day !== 13) ? "rd" : "th";
-
       const weekday = d.toLocaleDateString('en-AU', { weekday: 'long' });
       const month = d.toLocaleDateString('en-AU', { month: 'long' });
       const year = d.getFullYear();
-
       txt.textContent = `${weekday} ${month} ${day}${suffix}, ${year}`;
     })();
   </script>
@@ -698,13 +690,14 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
   </script>
 
+  <!-- Title animation -->
   <script>
     // Keep ’s glued to the word with WORD JOINER (U+2060)
     const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
     const titleElement = document.getElementById("weddingTitle");
 
     // Tuning knobs
-    const PER_LETTER = 0.06;    // seconds between letters in the same word
+    const PER_LETTER = 0.06;   // seconds between letters in the same word
     const BETWEEN_WORDS = 0.20; // small pause between words
 
     const html = words.map((word, w) => {
@@ -717,6 +710,41 @@
     }).join("");
 
     titleElement.innerHTML = html;
+  </script>
+
+  <!-- Android Chrome viewport stabilization (fixes first-scroll jump) -->
+  <script>
+    (function () {
+      // Use VisualViewport when available to reduce jank as toolbars show/hide.
+      const setVH = (h) => {
+        // h is in CSS px; write it to a CSS variable for the .bg min-height fallback
+        document.documentElement.style.setProperty('--vh', h + 'px');
+      };
+
+      const update = () => {
+        // Prefer visualViewport height; fall back to innerHeight
+        const h = window.visualViewport ? Math.round(window.visualViewport.height) : window.innerHeight;
+        setVH(h);
+      };
+
+      // Initial set
+      update();
+
+      // Update on viewport changes (address bar show/hide)
+      if (window.visualViewport) {
+        let raf = 0;
+        const onVV = () => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(update);
+        };
+        visualViewport.addEventListener('resize', onVV);
+        visualViewport.addEventListener('scroll', onVV);
+      } else {
+        // Fallback listeners
+        window.addEventListener('resize', update);
+        window.addEventListener('orientationchange', () => setTimeout(update, 250));
+      }
+    })();
   </script>
 </body>
 </html>
