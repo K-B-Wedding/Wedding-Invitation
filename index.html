@@ -7,14 +7,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Keirra & Brandon's Wedding</title>
-
-  <!-- ✅ Preload background to prevent first-scroll lag -->
-  <link rel="preload" as="image" href="cavesBeachBackground.png">
-
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     /* -------- Base styles -------- */
+    html, body {
+      height: 100%;
+    }
     body {
       font-family: 'Raleway', sans-serif;
       margin: 0;
@@ -24,23 +23,27 @@
       position: relative;
       min-height: 100vh;
       overflow-x: hidden;
+      /* Prevent accidental rubber-band glow on iOS */
+      background: #000;
     }
 
-    /* ✅ New fixed background layer (replaces body::before) */
-    #bg {
+    /* Background element (desktop = fixed; mobile = non-fixed to avoid jank) */
+    .bg {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: url('cavesBeachBackground.png') center / cover no-repeat;
-      transform: translateZ(0);
+      background-image: url('cavesBeachBackground.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transform: translateZ(0); /* promote to its own layer */
       will-change: transform;
-      backface-visibility: hidden;
-      pointer-events: none;
     }
 
     /* Wrapper that we scale only on desktop to simulate ~150% zoom */
     .page-zoom-wrap { transform: none; }
 
+    /* Desktop-only scale (~1.5x). Targets devices with a mouse/trackpad pointer. */
     @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
       :root { --desktop-scale: 1.5; }
       .page-zoom-wrap {
@@ -54,15 +57,14 @@
     header {
       padding: 170px 20px 0px 20px;
       background-color: rgba(0, 0, 0, 0.4);
-      contain: paint;
     }
 
     section {
       padding: 40px 20px;
       background-color: rgba(0, 0, 0, 0.4);
-      contain: paint;
     }
 
+    /* Sharper text on WebKit + crisper "neon" */
     h1, h2, p, li, button, a {
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -78,6 +80,7 @@
         0 2px 4px rgba(0,0,0,0.55);
       word-spacing: 0.1em;
     }
+    /* Do not wrap inside each word; only allow breaks between words */
     h1 .word { display: inline-block; white-space: nowrap; }
 
     h2, p, li, button, a {
@@ -86,10 +89,14 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
     }
 
+    /* Mobile sizing so we never overflow and split inside words */
     @media (max-width: 430px) {
       h1 {
         font-size: clamp(2.2rem, 9vw, 3rem);
         line-height: 1.1;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: normal;
       }
     }
 
@@ -135,11 +142,13 @@
       background: rgba(255,255,255,0.14);
       border: 1px solid rgba(255,255,255,0.45);
       border-radius: 9999px;
+      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       font-weight: 700;
       letter-spacing: .015em;
       box-shadow: 0 3px 8px rgba(0,0,0,0.25);
     }
+
     .pill-dot {
       width: 7px;
       height: 7px;
@@ -148,6 +157,7 @@
       box-shadow: 0 0 6px rgba(255,255,255,0.8);
     }
 
+    /* RSVP link button */
     .rsvp-button {
       display: inline-block;
       margin: 20px 0 6px 0;
@@ -158,6 +168,7 @@
       border: 2px solid rgba(255, 255, 255, 0.6);
       border-radius: 8px;
       cursor: pointer;
+      -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
       text-shadow: 0 1px 2px rgba(0,0,0,0.6);
@@ -170,25 +181,52 @@
       transform: scale(1.03);
     }
 
+    /* Small caption under RSVP */
     .rsvp-deadline {
       font-size: 0.9rem;
       opacity: 0.9;
       margin-top: 6px;
     }
 
+    /* Key details list */
     .details {
       max-width: 700px;
       margin: 0 auto;
       text-align: left;
       display: inline-block;
     }
-    .details ul { list-style: none; padding: 0; margin: 0; }
+    .details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
     .details li {
       margin: 10px 0;
       padding: 10px 12px;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 10px;
+    }
+    .details .label {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .details .time {
+      white-space: nowrap;
+    }
+
+    .photo-collage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .photo-collage img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     }
 
     .entourage ul { list-style-type: none; padding: 0; }
@@ -214,6 +252,28 @@
       border: none;
     }
 
+    /* Phones */
+    @media screen and (max-width: 400px) {
+      .countdown-box { flex: 1 1 40%; padding: 8px; margin: 0 auto; }
+      .countdown-box .digit { font-size: 1.5rem; }
+      .countdown-box .label { font-size: 0.8rem; }
+      .photo-collage img { width: 100px; height: 100px; }
+      .details { text-align: left; }
+    }
+
+    /* Tablets+ */
+    @media screen and (min-width: 768px) {
+      .countdown-box {
+        padding: 10px 6px;
+        border-radius: 6px;
+        flex: 1 1 20%;
+        max-width: 160px;
+      }
+      .countdown-box .digit { font-size: 1.8rem; }
+      .countdown-box .label { font-size: 0.85rem; }
+    }
+
+    /* Carousel */
     .carousel-container {
       width: 600px;
       margin: 0 auto;
@@ -229,12 +289,19 @@
       transform: translate3d(0,0,0);
     }
 
+    .img-top { object-position: 50% 15%; }
+
     .carousel-track img {
       width: 180px;
       height: 165px;
       object-fit: cover;
       border-radius: 14px;
       flex-shrink: 0;
+      display: block;
+      overflow: hidden;
+      background-color: rgba(255,255,255,0.05);
+      clip-path: inset(0 round 14px);
+      -webkit-clip-path: inset(0 round 14px);
     }
 
     @media screen and (max-width: 600px) {
@@ -266,7 +333,6 @@
       font-size: 2.5rem;
       margin-bottom: 10px;
     }
-
     #playPauseBtn {
       display: inline-flex;
       align-items: center;
@@ -278,6 +344,7 @@
       color: white;
       border-radius: 10px;
       cursor: pointer;
+      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
@@ -297,13 +364,35 @@
     @keyframes fadeUp {
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* -------- Touch-device performance guardrails -------- */
+    @media (hover: none) and (pointer: coarse) {
+      /* Make background non-fixed to avoid iOS repaint hiccup */
+      .bg {
+        position: absolute; /* scrolls with content */
+      }
+
+      /* Remove blur (expensive on iOS) on initial scroll path */
+      .date-pill,
+      .rsvp-button,
+      #playPauseBtn {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        /* Slightly stronger fill so it still looks good without blur */
+        background: rgba(255,255,255,0.20);
+      }
+
+      /* Keep everything on its own layers for smoother scroll */
+      header, section, .carousel-track {
+        will-change: auto;
+      }
+    }
   </style>
 </head>
 
 <body>
-
-  <!-- ✅ NEW GPU BACKGROUND LAYER -->
-  <div id="bg"></div>
+  <!-- Background element -->
+  <div class="bg" aria-hidden="true"></div>
 
   <div class="page-zoom-wrap">
     <header>
@@ -328,7 +417,9 @@
       <h2>You're Invited!</h2>
       <p>Join us for our special day by the sea.</p>
 
-      <a class="rsvp-button"
+      <!-- Direct RSVP link -->
+      <a
+        class="rsvp-button"
         href="https://docs.google.com/forms/d/e/1FAIpQLScY3FTk2hkgvzT7eNJMLhFwH0n-sqEwdHWkqxUC046T5DVTWg/viewform?usp=dialog"
       >💌 RSVP Now</a>
       <div class="rsvp-deadline">Please RSVP by <strong>15 December 2025</strong>.</div>
@@ -338,7 +429,7 @@
       <h2>Our Song</h2>
       <button id="playPauseBtn" aria-label="Play">
         <span id="iconContainer">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
         </span>
         <span style="margin-left: 8px;">Play</span>
       </button>
@@ -371,6 +462,7 @@
       </div>
     </section>
 
+    <!-- Key Details -->
     <section class="fade-in">
       <h2>Key Details</h2>
       <div class="details">
@@ -397,6 +489,7 @@
           We’re keeping our day heartfelt and personal.<br>
           Plus ones may be included at the discretion of the bride and groom.
       </p>
+
     </section>
 
     <section class="attire fade-in">
@@ -412,12 +505,12 @@
     <section class="venue fade-in">
       <h2>📌Venue📌</h2>
       <p>Caves Coastal, Newcastle, Caves Beach</p>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" allowfullscreen="" loading="lazy"></iframe>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </section>
 
     <footer style="padding: 20px; text-align: center; background-color: rgba(0,0,0,0.3); color: white;">
       <p>#KeirraAndBrandon2026 • 📍
-        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
+        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
           Caves Beach Venue
         </a>
       </p>
@@ -449,6 +542,7 @@
     const txt = document.getElementById("datePillText");
     const d = new Date(weddingDate);
 
+    // Get day number + suffix
     const day = d.getDate();
     const suffix =
       (day % 10 === 1 && day !== 11) ? "st" :
@@ -569,8 +663,14 @@
     const button = document.getElementById("playPauseBtn");
     const iconContainer = document.getElementById("iconContainer");
 
-    const playIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>`;
-    const pauseIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+    const playIcon = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5v14l11-7z"/>
+      </svg>`;
+    const pauseIcon = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>`;
 
     button.addEventListener("click", () => {
       if (audio.paused) {
@@ -600,23 +700,24 @@
   </script>
 
   <script>
-  const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
-  const titleElement = document.getElementById("weddingTitle");
+    // Keep ’s glued to the word with WORD JOINER (U+2060)
+    const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
+    const titleElement = document.getElementById("weddingTitle");
 
-  const PER_LETTER = 0.06;
-  const BETWEEN_WORDS = 0.20;
+    // Tuning knobs
+    const PER_LETTER = 0.06;   // seconds between letters in the same word
+    const BETWEEN_WORDS = 0.20; // small pause between words
 
-  const html = words.map((word, w) => {
-    const base = w * BETWEEN_WORDS;
-    const letters = [...word].map((ch, i) => {
-      const delay = (base + i * PER_LETTER).toFixed(2);
-      return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
+    const html = words.map((word, w) => {
+      const base = w * BETWEEN_WORDS; // tiny offset for each word
+      const letters = [...word].map((ch, i) => {
+        const delay = (base + i * PER_LETTER).toFixed(2);
+        return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
+      }).join("");
+      return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
     }).join("");
-    return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
-  }).join("");
 
-  titleElement.innerHTML = html;
+    titleElement.innerHTML = html;
   </script>
-
 </body>
 </html>
