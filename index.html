@@ -11,12 +11,11 @@
 
   <style>
     /* -------- Base styles -------- */
-    :root { --glass: rgba(255,255,255,0.12); --glass-strong: rgba(255,255,255,0.22); }
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Raleway', sans-serif;
       margin: 0;
-      padding: 0;
       color: white;
       text-align: center;
       position: relative;
@@ -24,23 +23,32 @@
       overflow-x: hidden;
     }
 
-    /* Full-bleed background stays outside the scaled wrapper */
+    /* Full-bleed background */
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
+      inset: 0;
+      z-index: -2;
       background-image: url('cavesBeachBackground.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
 
-    /* Wrapper that we scale only on desktop to simulate ~150% zoom */
+    /* Single, site-wide soft darkening overlay so all sections match */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      /* keep this consistent across the whole page to avoid “lines” */
+      background: rgba(0, 0, 0, 0.22); /* slightly lighter than before */
+      backdrop-filter: saturate(120%) blur(0.2px);
+    }
+
+    /* Wrapper scaled on desktop to simulate ~150% zoom */
     .page-zoom-wrap { transform: none; }
 
-    /* Desktop-only scale (~1.5x). Targets devices with a mouse/trackpad pointer. */
     @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
       :root { --desktop-scale: 1.5; }
       .page-zoom-wrap {
@@ -51,34 +59,10 @@
       }
     }
 
-    header {
-      position: relative;
-      padding: 170px 20px 30px 20px;
-      background-color: rgba(0, 0, 0, 0.4);
-      /* soft fade so there’s no visible seam into the next section */
-    }
-    header::after{
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:-1px;
-      height:60px;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.40) 0%,
-        rgba(0,0,0,0.38) 40%,
-        rgba(0,0,0,0.35) 70%,
-        rgba(0,0,0,0.30) 100%
-      );
-      pointer-events:none;
-      filter: blur(4px);
-    }
+    header { padding: 170px 20px 0 20px; }
+    section { padding: 40px 20px; }
 
-    section {
-      padding: 40px 20px;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-
-    /* Sharper text on WebKit + crisper "neon" */
+    /* Sharper text & glow */
     h1, h2, p, li, button, a {
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -94,27 +78,21 @@
         0 2px 4px rgba(0,0,0,0.55);
       word-spacing: 0.1em;
     }
-    /* Do not wrap inside each word; only allow breaks between words */
     h1 .word { display: inline-block; white-space: nowrap; }
 
-
     h2, p, li, button, a {
-      font-family: 'Raleway', sans-serif;
       color: white;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
     }
 
-    /* Mobile sizing so we never overflow and split inside words */
     @media (max-width: 430px) {
       h1 {
         font-size: clamp(2.2rem, 9vw, 3rem);
         line-height: 1.1;
-        white-space: normal;
-        word-break: normal;
-        overflow-wrap: normal;
       }
     }
 
+    /* Countdown */
     .countdown {
       display: flex;
       justify-content: space-between;
@@ -126,146 +104,107 @@
       flex-wrap: nowrap;
       padding: 0 5px;
     }
-
     .countdown-box {
-      background: var(--glass);
+      background: rgba(255, 255, 255, 0.16);
       padding: 6px;
-      border-radius: 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.28);
       flex: 1 1 22%;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
       animation: pulse 3s infinite ease-in-out;
-      border: 1px solid rgba(255,255,255,0.25);
       backdrop-filter: blur(4px);
     }
-
     .countdown-box .digit {
       font-size: clamp(1rem, 4vw, 1.6rem);
-      font-weight: bold;
+      font-weight: 700;
       display: block;
       line-height: 1;
     }
-
     .countdown-box .label {
       font-size: clamp(0.6rem, 2vw, 0.8rem);
       margin-top: 2px;
-      opacity: 0.9;
       letter-spacing: 0.04em;
     }
 
-    /* Date pill under countdown */
-    .date-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:.5ch;
-      margin-top:14px;
-      padding:8px 14px;
-      background: var(--glass);
-      border:1px solid rgba(255,255,255,0.25);
-      border-radius:999px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+    /* Seamless event date chip — same style family as countdown boxes */
+    .event-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.28);
       backdrop-filter: blur(6px);
       font-weight: 700;
-      letter-spacing: .02em;
+      letter-spacing: 0.02em;
     }
-    .date-pill .dot{
-      width:6px; height:6px; border-radius:50%;
+    .event-date .dot {
+      width: 6px; height: 6px; border-radius: 50%;
       background: rgba(255,255,255,0.9);
-      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
     }
 
-    /* RSVP link button */
+    /* RSVP button */
     .rsvp-button {
       display: inline-block;
       margin: 20px 0 6px 0;
       padding: 12px 24px;
       font-size: 1.1rem;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.10);
       color: white;
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+      border-radius: 12px;
       cursor: pointer;
       backdrop-filter: blur(4px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
       text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-      transition: all 0.3s ease;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
       text-decoration: none;
     }
     .rsvp-button:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.22);
       border-color: white;
-      transform: scale(1.03);
+      transform: translateY(-1px) scale(1.03);
     }
+    .rsvp-deadline { font-size: 0.9rem; opacity: 0.95; margin-top: 6px; }
 
-    /* Small caption under RSVP */
-    .rsvp-deadline {
-      font-size: 0.9rem;
-      opacity: 0.9;
-      margin-top: 6px;
-    }
-
-    /* Key details list */
+    /* Key details */
     .details {
       max-width: 700px;
       margin: 0 auto;
       text-align: left;
       display: inline-block;
     }
-    .details ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    .details ul { list-style: none; padding: 0; margin: 0; }
     .details li {
       margin: 10px 0;
       padding: 10px 12px;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      backdrop-filter: blur(3px);
     }
-    .details .label {
-      font-weight: 700;
-      margin-right: 6px;
-    }
-    .details .time {
-      white-space: nowrap;
-    }
+    .details .label { font-weight: 700; margin-right: 6px; }
+    .details .time { white-space: nowrap; }
 
-    .photo-collage {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
+    /* Collage */
+    .photo-collage { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
     .photo-collage img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 10px;
+      width: 150px; height: 150px; object-fit: cover; border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     }
 
     .entourage ul { list-style-type: none; padding: 0; }
     .entourage li { margin: 10px 0; }
 
-    .faq, .attire, .reminders {
-      text-align: center;
-      max-width: 600px;
-      margin: auto;
-    }
+    .faq, .attire, .reminders { text-align: center; max-width: 600px; margin: auto; }
+    .reminders ul { list-style-position: inside; display: inline-block; text-align: left; padding: 0; margin: 0 auto; }
 
-    .reminders ul {
-      list-style-position: inside;
-      display: inline-block;
-      text-align: left;
-      padding: 0;
-      margin: 0 auto;
-    }
-
-    .venue iframe {
-      width: 90%;
-      height: 300px;
-      border: none;
-    }
+    .venue iframe { width: 90%; height: 300px; border: none; }
 
     /* Phones */
     @media screen and (max-width: 400px) {
@@ -274,14 +213,13 @@
       .countdown-box .label { font-size: 0.8rem; }
       .photo-collage img { width: 100px; height: 100px; }
       .details { text-align: left; }
-      .date-pill{ padding:7px 12px; font-size:.95rem; }
     }
 
     /* Tablets+ */
     @media screen and (min-width: 768px) {
       .countdown-box {
         padding: 10px 6px;
-        border-radius: 6px;
+        border-radius: 10px;
         flex: 1 1 20%;
         max-width: 160px;
       }
@@ -296,7 +234,6 @@
       overflow: hidden;
       display: block;
     }
-
     .carousel-track {
       display: flex;
       gap: 20px;
@@ -304,68 +241,41 @@
       will-change: transform;
       transform: translate3d(0,0,0);
     }
-
     .img-top { object-position: 50% 15%; }
-
     .carousel-track img {
-      width: 180px;
-      height: 165px;
+      width: 180px; height: 165px;
       object-fit: cover;
       border-radius: 14px;
-      flex-shrink: 0;
-      display: block;
-      overflow: hidden;
+      flex-shrink: 0; display: block; overflow: hidden;
       background-color: rgba(255,255,255,0.05);
       clip-path: inset(0 round 14px);
       -webkit-clip-path: inset(0 round 14px);
     }
-
     @media screen and (max-width: 600px) {
       .carousel-container { width: 100%; padding: 10px 10px; }
       .carousel-track img { width: 100px; height: 150px; }
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
+    @keyframes pulse { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.05);} }
 
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 1s ease, transform 1s ease;
-    }
-    .fade-in.visible {
-      opacity: 1; transform: translateY(0);
-    }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-    .our-song {
-      background-color: rgba(0, 0, 0, 0.4);
-      padding: 30px 20px;
-      text-align: center;
-    }
-    .our-song h2 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
+    /* Our Song */
+    .our-song { padding: 30px 20px; text-align: center; }
+    .our-song h2 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; margin-bottom: 10px; }
     #playPauseBtn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 1rem;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 1rem; padding: 10px 20px;
+      background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.5);
+      color: white; border-radius: 10px; cursor: pointer;
       backdrop-filter: blur(6px);
       box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
     }
-    #playPauseBtn:hover { background: rgba(255, 255, 255, 0.18); border-color: white; }
+    #playPauseBtn:hover { background: rgba(255,255,255,0.18); border-color: white; }
 
+    /* Title letters animation */
     .letter {
       opacity: 0;
       display: inline-block;
@@ -376,9 +286,7 @@
         0 0 6px rgba(255,255,255,0.55),
         0 2px 4px rgba(0,0,0,0.55);
     }
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 
@@ -394,10 +302,10 @@
         <div class="countdown-box"><span class="digit" id="seconds">00</span><span class="label">SECONDS</span></div>
       </div>
 
-      <!-- Seamlessly integrated date -->
-      <div id="datePill" class="date-pill" aria-label="Wedding date" role="text">
+      <!-- Seamless event date (auto-filled by JS) -->
+      <div class="event-date" id="eventDate" aria-live="polite">
         <span class="dot" aria-hidden="true"></span>
-        <span id="dateText">Saturday · 7 February 2026</span>
+        <span id="eventDateText">Saturday • 7 February 2026</span>
         <span class="dot" aria-hidden="true"></span>
       </div>
     </header>
@@ -406,7 +314,6 @@
       <h2>You're Invited!</h2>
       <p>Join us for our special day by the sea.</p>
 
-      <!-- Direct RSVP link -->
       <a
         class="rsvp-button"
         href="https://docs.google.com/forms/d/e/1FAIpQLScY3FTk2hkgvzT7eNJMLhFwH0n-sqEwdHWkqxUC046T5DVTWg/viewform?usp=dialog"
@@ -475,10 +382,9 @@
     <section class="faq fade-in">
       <h2>❓FAQ❓</h2>
       <p><strong>Can I bring a guest?</strong><br>
-          We’re keeping our day heartfelt and personal.<br>
-          Plus ones may be included at the discretion of the bride and groom.
+        We’re keeping our day heartfelt and personal.<br>
+        Plus ones may be included at the discretion of the bride and groom.
       </p>
-
     </section>
 
     <section class="attire fade-in">
@@ -494,12 +400,12 @@
     <section class="venue fade-in">
       <h2>📌Venue📌</h2>
       <p>Caves Coastal, Newcastle, Caves Beach</p>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.163814416935!2d151.64319987809841!3d-33.10477691502382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b732164f44dc649%3A0x44b652f79ce27b40!2sCaves%20Coastal%20Bar%20and%20Bungalows!5e0!3m2!1sen!2sau!4v1750324293190!5m2!1sen!2sau" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </section>
 
-    <footer style="padding: 20px; text-align: center; background-color: rgba(0,0,0,0.3); color: white;">
+    <footer style="padding:20px;text-align:center;color:white;">
       <p>#KeirraAndBrandon2026 • 📍
-        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">
+        <a href="https://www.google.com/maps/place/Caves+Coastal+Bar+and+Bungalows/@-33.1047769,151.6457744,17z" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration: underline;">
           Caves Beach Venue
         </a>
       </p>
@@ -508,34 +414,36 @@
 
   <!-- Countdown -->
   <script>
-    const weddingDate = new Date("2026-02-07T16:00:00").getTime();
+    const weddingDateISO = "2026-02-07T16:00:00"; // local time
+    const weddingDate = new Date(weddingDateISO).getTime();
 
-    const updateCountdown = () => {
-      const now = new Date().getTime();
+    function formatEventDate() {
+      const d = new Date(weddingDateISO);
+      const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      // Use en-AU for day-month order
+      const txt = d.toLocaleDateString('en-AU', opts);
+      document.getElementById('eventDateText').textContent = txt.replace(',', '');
+    }
+    formatEventDate();
+
+    function updateCountdown() {
+      const now = Date.now();
       const distance = weddingDate - now;
       if (distance < 0) {
         document.querySelector('.countdown').innerHTML = "We're Married! 💍";
-        document.getElementById('dateText').textContent = new Date(weddingDate).toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        document.getElementById('eventDate').style.display = 'none';
         return;
       }
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
       document.getElementById("days").innerText = String(days).padStart(2, '0');
       document.getElementById("hours").innerText = String(hours).padStart(2, '0');
       document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
       document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
-    };
-
-    // Set date text in the pill once, using locale formatting
-    (function setDatePill(){
-      const d = new Date("2026-02-07T16:00:00");
-      // Example: Saturday · 7 February 2026
-      const formatted = d.toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-      document.getElementById('dateText').textContent = formatted.replace(',', '');
-    })();
-
+    }
     updateCountdown();
     setInterval(updateCountdown, 1000);
   </script>
@@ -546,18 +454,13 @@
       const container = document.querySelector(".carousel-container");
       const track = document.querySelector(".carousel-track");
       const SPEED_PX_PER_SEC = 105;
-      let firstSetWidth = 0;
-      let raf = 0;
-      let running = false;
-      let x = 0;
-      let last = 0;
+      let firstSetWidth = 0, raf = 0, running = false, x = 0, last = 0;
 
       function measureGapPx() {
         const cs = getComputedStyle(track);
         const g = cs.gap || cs.columnGap || "0px";
         return parseFloat(g) || 0;
       }
-
       function step(now) {
         if (!running) return;
         const dt = (now - last) / 1000;
@@ -567,18 +470,8 @@
         track.style.transform = `translate3d(${-x}px,0,0)`;
         raf = requestAnimationFrame(step);
       }
-
-      function start() {
-        if (running) return;
-        running = true;
-        last = performance.now();
-        raf = requestAnimationFrame(step);
-      }
-
-      function pause() {
-        running = false;
-        cancelAnimationFrame(raf);
-      }
+      function start(){ if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(step); }
+      function pause(){ running = false; cancelAnimationFrame(raf); }
 
       function build() {
         const prevWidth = firstSetWidth;
@@ -646,14 +539,8 @@
     const button = document.getElementById("playPauseBtn");
     const iconContainer = document.getElementById("iconContainer");
 
-    const playIcon = `
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 5v14l11-7z"/>
-      </svg>`;
-    const pauseIcon = `
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-      </svg>`;
+    const playIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
     button.addEventListener("click", () => {
       if (audio.paused) {
@@ -682,27 +569,25 @@
     faders.forEach(fader => appearOnScroll.observe(fader));
   </script>
 
+  <!-- Title animation -->
   <script>
-  // Keep ’s glued to the word with WORD JOINER (U+2060)
-  const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
-  const titleElement = document.getElementById("weddingTitle");
+    // Keep ’s glued with WORD JOINER (U+2060)
+    const words = ["Keirra", "&", "Brandon\u2060's", "Wedding"];
+    const titleElement = document.getElementById("weddingTitle");
 
-  // Tuning knobs
-  const PER_LETTER = 0.06;   // seconds between letters in the same word
-  const BETWEEN_WORDS = 0.20; // small pause between words
+    const PER_LETTER = 0.06;
+    const BETWEEN_WORDS = 0.20;
 
-  const html = words.map((word, w) => {
-    const base = w * BETWEEN_WORDS; // tiny offset for each word
-    const letters = [...word].map((ch, i) => {
-      const delay = (base + i * PER_LETTER).toFixed(2);
-      return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
+    const html = words.map((word, w) => {
+      const base = w * BETWEEN_WORDS;
+      const letters = [...word].map((ch, i) => {
+        const delay = (base + i * PER_LETTER).toFixed(2);
+        return `<span class="letter" style="animation-delay:${delay}s">${ch === " " ? "&nbsp;" : ch}</span>`;
+      }).join("");
+      return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
     }).join("");
-    // normal space between words so the browser can wrap there (not inside)
-    return `<span class="word">${letters}</span>${w < words.length - 1 ? " " : ""}`;
-  }).join("");
 
-  titleElement.innerHTML = html;
-</script>
-
+    titleElement.innerHTML = html;
+  </script>
 </body>
 </html>
